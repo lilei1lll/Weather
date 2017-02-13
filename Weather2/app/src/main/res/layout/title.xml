@@ -22,14 +22,53 @@
         android:textColor="#fff"
         android:textSize="20sp" />-->
 
-    <TextView
-        android:id="@+id/title_updata_time"
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginRight="10dp"
-        android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
-        android:textColor="#fff"
-        android:textSize="16sp"/>
+        android:layout_alignParentRight="true">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="loc:"
+                android:textColor="#fff"
+                android:textSize="16sp"/>
+
+            <TextView
+                android:id="@+id/title_update_loc_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#fff"
+                android:textSize="16sp"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="utc:"
+                android:textSize="16sp"
+                android:textColor="#fff"/>
+
+            <TextView
+                android:id="@+id/title_update_utc_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#fff"
+                android:textSize="16sp"/>
+
+        </LinearLayout>
+    </LinearLayout>
 
 </RelativeLayout>
