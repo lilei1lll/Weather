@@ -9,9 +9,30 @@ public class Now {
     @SerializedName("cond")
     public More more;
 
-    public class More{
+    @SerializedName("fl")
+    public String sensibleTemp;
+
+    @SerializedName("hum")
+    public String relativeHumidity;
+
+    @SerializedName("pcpn")
+    public String precipitation;
+
+    @SerializedName("wind")
+    public Wind wind;
+
+    public class More {
 
         @SerializedName("txt")
         public String info;
+    }
+
+    public class Wind {
+
+        @SerializedName("deg")
+        public String windDirection1;
+
+        @SerializedName("dir")
+        public String windDirection2;
     }
 }

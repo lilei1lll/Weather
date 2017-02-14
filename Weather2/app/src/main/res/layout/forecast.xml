@@ -37,34 +37,26 @@
             android:layout_gravity="center"
             android:text="days"
             android:textColor="#fff"
-            android:textSize="20sp"/>
+            android:textSize="16sp"/>
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_gravity="center"
-            android:text="info"
+            android:text="状况"
             android:textColor="#fff"
-            android:textSize="20sp"/>
+            android:textSize="16sp"/>
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_gravity="center"
-            android:text="max"
+            android:text="温度"
             android:textColor="#fff"
-            android:textSize="20sp"/>
+            android:textSize="16sp"/>
 
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_gravity="center"
-            android:text="min"
-            android:textColor="#fff"
-            android:textSize="20sp"/>
 
     </LinearLayout>
 
@@ -83,32 +75,27 @@
     </LinearLayout>
 
 
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="0.1dp"
+        android:background="@android:color/darker_gray"/>
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="15dp"
         android:text="hours"
         android:textColor="#fff"
-        android:textSize="20sp"/>
+        android:textSize="16sp"/>
 
-    <LinearLayout
-        android:id="@+id/forecast_hourly_layout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-
-    </LinearLayout>
-
-    <!--<LinearLayout
-        android:id="@+id/forecast_hours_layout"
+    <ImageView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="0.1dp"
+        android:background="@android:color/darker_gray"/>
 
-        <android.support.v7.app.AlertController.RecycleListView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-
-        </android.support.v7.app.AlertController.RecycleListView>
-    </LinearLayout> -->
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/forecast_hourly_recycler_view_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
 </LinearLayout>

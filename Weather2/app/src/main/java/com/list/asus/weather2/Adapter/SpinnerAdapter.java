@@ -1,4 +1,4 @@
-package com.list.asus.weather2;
+package com.list.asus.weather2.Adapter;
 
 import android.content.Context;
 import android.graphics.Color;
