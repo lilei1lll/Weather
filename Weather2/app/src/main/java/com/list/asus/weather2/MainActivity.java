@@ -36,7 +36,8 @@ public class MainActivity extends AppCompatActivity {
             aqiText, no2Text, o3Text, pm10Text, pm25Text, qltyText,so2Text,
             airText, comfortText, carWashText, sportText,
             dressSuggestionText, fluText, travelText, ultravioletText;
-    private LinearLayout forecastDaliyLayout;
+    private LinearLayout forecastDailyLayout;
+    private LinearLayout forecastHourlyLayout;
     private ImageView backgroundPicImg;
 
     @Override
@@ -56,7 +57,8 @@ public class MainActivity extends AppCompatActivity {
         titleUpdateUtcTime = (TextView) findViewById(R.id.title_update_utc_time);
         degreeText = (TextView) findViewById(R.id.degree_text);
         weatherInfoText = (TextView) findViewById(R.id.weather_into_text);
-        forecastDaliyLayout = (LinearLayout) findViewById(R.id.forecast_daily_layout);
+        forecastDailyLayout = (LinearLayout) findViewById(R.id.forecast_daily_layout);
+        forecastHourlyLayout = (LinearLayout) findViewById(R.id.forecast_hourly_layout);
 
         aqiText = (TextView) findViewById(R.id.aqi_text);
         no2Text = (TextView) findViewById(R.id.no2_text);
@@ -161,10 +163,10 @@ public class MainActivity extends AppCompatActivity {
         titleUpdateUtcTime.setText(updateUtcTime);
         degreeText.setText(degree);
         weatherInfoText.setText(weatherInfo);
-        forecastDaliyLayout.removeAllViews();
+        forecastDailyLayout.removeAllViews();
         for (DailyForecast dailyForecast : weather.dailyForecastList){
             View view = LayoutInflater.from(this).inflate(R.layout.forecast_daily_item,
-                    forecastDaliyLayout, false);
+                    forecastDailyLayout, false);
             TextView dateText = (TextView) view.findViewById(R.id.days_text);
             TextView infoText = (TextView) view.findViewById(R.id.info_text);
             TextView maxText = (TextView) view.findViewById(R.id.max_text);
@@ -174,18 +176,19 @@ public class MainActivity extends AppCompatActivity {
             infoText.setText(dailyForecast.more.info);
             maxText.setText(dailyForecast.temperature.max + "℃");
             minText.setText(dailyForecast.temperature.min + "℃");
-            forecastDaliyLayout.addView(view);
+            forecastDailyLayout.addView(view);
         }
+        forecastHourlyLayout.removeAllViews();
         for (HourlyForecast hourlyForecast : weather.hourlyForecastList){
             View view = LayoutInflater.from(this).inflate(R.layout.forecast_hourly_item,
-                    forecastDaliyLayout, false);
+                    forecastHourlyLayout, false);
             TextView hourlyDateText = (TextView) view.findViewById(R.id.hourly_time_text);
             TextView hourlyInfoText = (TextView) view.findViewById(R.id.hourly_info_text);
             TextView hourlyTempText = (TextView) view.findViewById(R.id.hourly_temp_text);
             hourlyDateText.setText(String.valueOf(hourlyForecast.date));
             hourlyInfoText.setText(hourlyForecast.more.info);
             hourlyTempText.setText(hourlyForecast.tmp + "℃");
-            forecastDaliyLayout.addView(view);
+            forecastHourlyLayout.addView(view);
         }
         if (weather.aqi != null){
             aqiText.setText(weather.aqi.city.aqi);
