@@ -9,11 +9,20 @@ public class Basic {
     @SerializedName("id")
     public String weatherId;
 
+    @SerializedName("lat")
+    public String latitude;  //纬度
+
+    @SerializedName("lon")
+    public String longitude;  //经度
+
     public Update update;
 
     public class Update{
 
         @SerializedName("loc")
-        public String updateTime;
+        public String updateLocTime;  //当地时间
+
+        @SerializedName("utc")
+        public String updateUtcTime;  //世界时间
     }
 }

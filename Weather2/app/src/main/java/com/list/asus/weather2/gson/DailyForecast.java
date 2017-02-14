@@ -2,7 +2,7 @@ package com.list.asus.weather2.gson;
 
 import com.google.gson.annotations.SerializedName;
 
-public class Forecast {
+public class DailyForecast {
 
     public String date;
 
