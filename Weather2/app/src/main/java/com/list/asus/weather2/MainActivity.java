@@ -163,6 +163,7 @@ public class MainActivity extends AppCompatActivity {
         titleUpdateUtcTime.setText(updateUtcTime);
         degreeText.setText(degree);
         weatherInfoText.setText(weatherInfo);
+        //加载daily布局
         forecastDailyLayout.removeAllViews();
         for (DailyForecast dailyForecast : weather.dailyForecastList){
             View view = LayoutInflater.from(this).inflate(R.layout.forecast_daily_item,
@@ -178,6 +179,7 @@ public class MainActivity extends AppCompatActivity {
             minText.setText(dailyForecast.temperature.min + "℃");
             forecastDailyLayout.addView(view);
         }
+        //加载hourly布局
         forecastHourlyLayout.removeAllViews();
         for (HourlyForecast hourlyForecast : weather.hourlyForecastList){
             View view = LayoutInflater.from(this).inflate(R.layout.forecast_hourly_item,
