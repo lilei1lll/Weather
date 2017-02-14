@@ -2,6 +2,8 @@ package com.list.asus.weather2;
 
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -28,6 +30,7 @@ import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
 
+    private DrawerLayout mDrawerLayout;
     private ScrollView weatherLayout;
     private Spinner titleCity;
     private TextView  titleUpdateTime, degreeText, weatherInfoText, aqiText,
@@ -41,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         initView();
         String weatherId = titleCity.getSelectedItem().toString();
-        requestWeather(weatherId);  //请求，。。。分析，显示数据
+        requestWeather(weatherId);  //请求，分析，显示数据
     }
 
     //初始化控件
@@ -58,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
         carWashText = (TextView) findViewById(R.id.car_wash_text);
         sportText = (TextView) findViewById(R.id.spport_text);
         backgroundPicImg = (ImageView) findViewById(R.id.background_pic);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 
         //设置titleCity的文字大小及颜色
         String[] cityId = getResources().getStringArray(R.array.cityId);
@@ -85,6 +89,15 @@ public class MainActivity extends AppCompatActivity {
 //        } else {
             loadBackgroundPic();
 //        }
+
+
+        //策划提示符点击事件
+        mDrawerLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mDrawerLayout.openDrawer(GravityCompat.START);
+            }
+        });
     }
 
     //根据城市id请求天气信息
@@ -195,4 +208,5 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
 }
