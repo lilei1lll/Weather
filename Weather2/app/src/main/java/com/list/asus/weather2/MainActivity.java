@@ -19,7 +19,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -68,7 +67,6 @@ public class MainActivity extends AppCompatActivity {
     private NavigationView navigationView;
 
     private LocationClient mLocationClient;
-    private String weatherLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
         }
         setContentView(R.layout.activity_main);
         initView();
-
+        initLbs();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String weatherString = prefs.getString("weather", null);
         final String weatherId;
@@ -145,27 +143,6 @@ public class MainActivity extends AppCompatActivity {
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh);
         swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
         navigationView = (NavigationView) findViewById(R.id.Nav_view);
-
-        //策划列表的监听
-        navigationView.setNavigationItemSelectedListener(new NavigationView
-                .OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(MenuItem item) {
-                switch (item.getItemId()){
-                    case R.id.chooseCity:
-                        break;
-                    case R.id.nav_setting:
-                        break;
-                    case R.id.about:
-                        break;
-                    case R.id.lbs:
-                        initLbs();
-                        break;
-                    default:
-                }
-                return false;
-            }
-        });
 
         //背景图片初始化
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -417,7 +394,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onReceiveLocation(BDLocation bdLocation) {
-            weatherLocation = bdLocation.getCity();
+            String weatherLocation = bdLocation.getCity();
             requestWeather(weatherLocation);
         }
 
