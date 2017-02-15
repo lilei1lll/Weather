@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -150,6 +151,16 @@ public class MainActivity extends AppCompatActivity {
 //        });
 
         //策划列表的监听
+
+
+        //FloatingActionButton的点击监听事件
+        FloatingActionButton floatingActionButton = (FloatingActionButton) findViewById(R.id.add_floatingActionButton);
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                
+            }
+        });
 
 
         //背景图片初始化
