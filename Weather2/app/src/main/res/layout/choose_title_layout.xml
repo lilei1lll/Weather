@@ -9,7 +9,6 @@
         android:layout_height="match_parent"
         android:layout_weight="1"
         android:layout_marginLeft="15dp"
-        android:text="<"
         android:textSize="30sp"/>
 
     <TextView
@@ -20,6 +19,8 @@
         android:textSize="25sp"/>
 
     <TextView
+        android:id="@+id/add_slip_textview"
+        android:clickable="true"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
