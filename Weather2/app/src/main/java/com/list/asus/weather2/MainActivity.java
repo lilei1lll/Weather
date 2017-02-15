@@ -9,10 +9,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
-import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -20,7 +18,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -61,10 +58,7 @@ public class MainActivity extends AppCompatActivity {
             dressSuggestionText, fluText, travelText, ultravioletText;
     private LinearLayout forecastDailyLayout;
     private ImageView backgroundPicImg;
-    private ImageButton tip_drawerLayout;
     public SwipeRefreshLayout swipeRefreshLayout;
-
-    private NavigationView navigationView;
 
     private LocationClient mLocationClient;
 
@@ -89,9 +83,11 @@ public class MainActivity extends AppCompatActivity {
             //有缓存时直接解析数据
             Weather weather = Utility.handleWeatherResponse(weatherString);
             weatherId = weather.basic.weatherId;
+            showWeatherInfo(weather);
         }else {
             //无缓存时去服务器查询天气
             weatherId = getIntent().getStringExtra("weather_id");
+            weatherLayout.setVisibility(View.INVISIBLE);
             requestWeather(weatherId);
         }
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -136,9 +132,9 @@ public class MainActivity extends AppCompatActivity {
         airText = (TextView) findViewById(R.id.air_text);
         travelText = (TextView) findViewById(R.id.travel_text);
         ultravioletText = (TextView) findViewById(R.id.ultraviolet_text);
-        //背景        backgroundPicImg = (ImageView) findViewById(R.id.background_pic);
+        //背景
+        backgroundPicImg = (ImageView) findViewById(R.id.background_pic);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        tip_drawerLayout = (ImageButton) findViewById(R.id.tip_drawerLayout);
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh);
         swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
 
@@ -151,13 +147,6 @@ public class MainActivity extends AppCompatActivity {
             loadBackgroundPic();
         }
 
-        //侧滑提示符点击事件
-        tip_drawerLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDrawerLayout.openDrawer(GravityCompat.START);
-            }
-        });
     }
 
     //根据城市id请求天气信息
