@@ -2,6 +2,8 @@ package com.list.asus.weather2;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.NavigationView;
@@ -9,6 +11,8 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,9 +26,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.list.asus.weather2.ChooseAreaActivity;
+import com.list.asus.weather2.Adapter.HourlyForecastAdapter;
+import com.list.asus.weather2.Adapter.SpinnerAdapter;
 import com.list.asus.weather2.gson.DailyForecast;
-import com.list.asus.weather2.gson.HourlyForecast;
 import com.list.asus.weather2.gson.Weather;
 import com.list.asus.weather2.util.HttpUtil;
 import com.list.asus.weather2.util.Utility;
@@ -41,12 +45,12 @@ public class MainActivity extends AppCompatActivity {
     private ScrollView weatherLayout;
     private Spinner titleCity;
     private TextView titleUpdateLocTime, titleUpdateUtcTime,
-            degreeText, weatherInfoText,
+            degreeText, weatherInfoText, sensibleTempText,
+            relativeHumidityText, precipitationText, windDirection1Text, windDirection2Text,
             aqiText, no2Text, o3Text, pm10Text, pm25Text, qltyText,so2Text,
             airText, comfortText, carWashText, sportText,
             dressSuggestionText, fluText, travelText, ultravioletText;
     private LinearLayout forecastDailyLayout;
-    private LinearLayout forecastHourlyLayout;
     private ImageView backgroundPicImg;
     private ImageButton tip_drawerLayout;
     public SwipeRefreshLayout swipeRefreshLayout;
@@ -56,6 +60,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //对API进行判断
+        if (Build.VERSION.SDK_INT >= 21) {
+            View decorView = getWindow().getDecorView();
+            decorView.setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+            getWindow().setStatusBarColor(Color.TRANSPARENT);
+        }
         setContentView(R.layout.activity_main);
         initView();
         //第一版
@@ -89,11 +101,17 @@ public class MainActivity extends AppCompatActivity {
         titleCity = (Spinner) findViewById(R.id.title_city);
         titleUpdateLocTime = (TextView) findViewById(R.id.title_update_loc_time);
         titleUpdateUtcTime = (TextView) findViewById(R.id.title_update_utc_time);
+        //Now
         degreeText = (TextView) findViewById(R.id.degree_text);
+        sensibleTempText = (TextView) findViewById(R.id.sensible_temp_text);
+        relativeHumidityText = (TextView) findViewById(R.id.relative_humidity_text);
+        precipitationText = (TextView) findViewById(R.id.precipitation_text);
+        windDirection1Text = (TextView) findViewById(R.id.wind_direction_text);
+        windDirection2Text = (TextView) findViewById(R.id.wind_text);
         weatherInfoText = (TextView) findViewById(R.id.weather_into_text);
+        //Daily布局
         forecastDailyLayout = (LinearLayout) findViewById(R.id.forecast_daily_layout);
-        forecastHourlyLayout = (LinearLayout) findViewById(R.id.forecast_hourly_layout);
-
+        //AQI
         aqiText = (TextView) findViewById(R.id.aqi_text);
         no2Text = (TextView) findViewById(R.id.no2_text);
         o3Text = (TextView) findViewById(R.id.o3_text);
@@ -101,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
         pm25Text = (TextView) findViewById(R.id.pm25_text);
         qltyText = (TextView) findViewById(R.id.qlty_text);
         so2Text = (TextView) findViewById(R.id.so2_text);
-
+        //Suggestion
         comfortText = (TextView) findViewById(R.id.comfort_text);
         carWashText = (TextView) findViewById(R.id.car_wash_text);
         sportText = (TextView) findViewById(R.id.sport_text);
@@ -110,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
         airText = (TextView) findViewById(R.id.air_text);
         travelText = (TextView) findViewById(R.id.travel_text);
         ultravioletText = (TextView) findViewById(R.id.ultraviolet_text);
-
+        //背景
         backgroundPicImg = (ImageView) findViewById(R.id.background_pic);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         tip_drawerLayout = (ImageButton) findViewById(R.id.tip_drawerLayout);
@@ -225,42 +243,50 @@ public class MainActivity extends AppCompatActivity {
     //处理并展示Weather实体类中的数据
     private void showWeatherInfo(Weather weather) {
         //String cityName = weather.basic.cityName;
-        String updateLocTime = weather.basic.update.updateLocTime;
-        String updateUtcTime = weather.basic.update.updateUtcTime;
+        String updateLocTime = "loc：" + weather.basic.update.updateLocTime;
+        String updateUtcTime = "utc：" + weather.basic.update.updateUtcTime;
+        String degree = weather.now.temperature + "℃";
+        String sensibleTemp = "体感温度：" + weather.now.sensibleTemp + "℃";
+        String relativeHumidity = "相对湿度：" + weather.now.relativeHumidity + "%";
+        String precipitation = "降水量：" + weather.now.precipitation + "mm";
+        String windDirection1 = "风向：" + weather.now.wind.windDirection1 + "°";
+        String windDirection2 = "风向：" + weather.now.wind.windDirection2;
         String weatherInfo = weather.now.more.info;
         String degree = weather.now.temperature + "℃";
         //titleCity.setText(cityName);
         titleUpdateLocTime.setText(updateLocTime);
         titleUpdateUtcTime.setText(updateUtcTime);
         degreeText.setText(degree);
+        sensibleTempText.setText(sensibleTemp);
+        relativeHumidityText.setText(relativeHumidity);
+        precipitationText.setText(precipitation);
+        windDirection1Text.setText(windDirection1);
+        windDirection2Text.setText(windDirection2);
         weatherInfoText.setText(weatherInfo);
+        //加载daily布局
         forecastDailyLayout.removeAllViews();
         for (DailyForecast dailyForecast : weather.dailyForecastList){
             View view = LayoutInflater.from(this).inflate(R.layout.forecast_daily_item,
                     forecastDailyLayout, false);
             TextView dateText = (TextView) view.findViewById(R.id.days_text);
             TextView infoText = (TextView) view.findViewById(R.id.info_text);
-            TextView maxText = (TextView) view.findViewById(R.id.max_text);
-            TextView minText = (TextView) view.findViewById(R.id.min_text);
+            TextView maxText = (TextView) view.findViewById(R.id.min_max_text);
             dateText.setText(String.valueOf(dailyForecast.date));
             dateText.setText(dailyForecast.date);
             infoText.setText(dailyForecast.more.info);
-            maxText.setText(dailyForecast.temperature.max + "℃");
-            minText.setText(dailyForecast.temperature.min + "℃");
+            maxText.setText(dailyForecast.temperature.min + "℃"
+                    + "~" + dailyForecast.temperature.max + "℃");
             forecastDailyLayout.addView(view);
         }
-        forecastHourlyLayout.removeAllViews();
-        for (HourlyForecast hourlyForecast : weather.hourlyForecastList){
-            View view = LayoutInflater.from(this).inflate(R.layout.forecast_hourly_item,
-                    forecastHourlyLayout, false);
-            TextView hourlyDateText = (TextView) view.findViewById(R.id.hourly_time_text);
-            TextView hourlyInfoText = (TextView) view.findViewById(R.id.hourly_info_text);
-            TextView hourlyTempText = (TextView) view.findViewById(R.id.hourly_temp_text);
-            hourlyDateText.setText(String.valueOf(hourlyForecast.date));
-            hourlyInfoText.setText(hourlyForecast.more.info);
-            hourlyTempText.setText(hourlyForecast.tmp + "℃");
-            forecastHourlyLayout.addView(view);
-        }
+        //加载Hourly布局
+        RecyclerView recyclerView = (RecyclerView)
+                findViewById(R.id.forecast_hourly_recycler_view_layout);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);  //实现横向布局
+        recyclerView.setLayoutManager(layoutManager);
+        HourlyForecastAdapter hourlyForecastAdapter =
+                new HourlyForecastAdapter(weather.hourlyForecastList);
+        recyclerView.setAdapter(hourlyForecastAdapter);
         if (weather.aqi != null){
             aqiText.setText(weather.aqi.city.aqi);
             no2Text.setText(weather.aqi.city.no2);

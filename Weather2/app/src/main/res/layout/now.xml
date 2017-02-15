@@ -4,24 +4,95 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:layout_margin="15dp">
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:layout_margin="15dp"
+    android:gravity="center">
 
-    <TextView
-        android:id="@+id/degree_text"
+   <LinearLayout
+       android:orientation="vertical"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content">
+
+       <TextView
+           android:id="@+id/degree_text"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:textColor="#fff"
+           android:textSize="60sp"/>
+
+       <TextView
+           android:id="@+id/weather_into_text"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_gravity="right"
+           android:textColor="#fff"
+           android:textSize="20sp"/>
+
+   </LinearLayout>
+
+    <ImageView
+        android:layout_width="1dp"
+        android:layout_height="50sp"
+        android:background="@android:color/white"/>
+
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:textColor="#fff"
-        android:textSize="60sp"/>
+        android:layout_gravity="center_vertical">
 
-    <TextView
-        android:id="@+id/weather_into_text"
+        <TextView
+            android:id="@+id/sensible_temp_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textColor="#fff"
+            android:textSize="12sp"/>
+
+        <TextView
+            android:id="@+id/relative_humidity_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textColor="#fff"
+            android:textSize="12sp"/>
+
+        <TextView
+            android:id="@+id/precipitation_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textColor="#fff"
+            android:textSize="12sp"/>
+
+    </LinearLayout>
+
+    <ImageView
+        android:layout_width="1dp"
+        android:layout_height="30sp"
+        android:background="@android:color/white"/>
+
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:textColor="#fff"
-        android:textSize="20sp"/>
+        android:layout_gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/wind_direction_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#fff"
+            android:textSize="12sp"/>
+
+        <TextView
+            android:id="@+id/wind_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#fff"
+            android:textSize="12sp"/>
+
+    </LinearLayout>
 
 </LinearLayout>
