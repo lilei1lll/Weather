@@ -4,6 +4,7 @@
     android:layout_height="?attr/actionBarSize">
 
     <ImageButton
+        android:id="@+id/tip_drawerLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
