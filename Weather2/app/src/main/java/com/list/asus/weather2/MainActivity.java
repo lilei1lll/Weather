@@ -13,7 +13,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ImageButton;
@@ -42,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
 
     public DrawerLayout mDrawerLayout;
     private ScrollView weatherLayout;
-    private Spinner titleCity;
+    private TextView titleCity;
     private TextView titleUpdateLocTime, titleUpdateUtcTime,
             degreeText, weatherInfoText, sensibleTempText,
             relativeHumidityText, precipitationText, windDirection1Text, windDirection2Text,
@@ -94,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
     //初始化控件
     private void initView() {
         weatherLayout = (ScrollView) findViewById(R.id.weather_layout);
-        titleCity = (Spinner) findViewById(R.id.title_city);
+        titleCity = (TextView) findViewById(R.id.city_name_text);
         titleUpdateLocTime = (TextView) findViewById(R.id.title_update_loc_time);
         titleUpdateUtcTime = (TextView) findViewById(R.id.title_update_utc_time);
         //Now
@@ -131,24 +130,24 @@ public class MainActivity extends AppCompatActivity {
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh);
         swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
 
-        //设置titleCity的文字大小及颜色
-        String[] cityId = getResources().getStringArray(R.array.cityId);
-        SpinnerAdapter adapter = new SpinnerAdapter(this,
-                android.R.layout.simple_spinner_item,cityId);
-        titleCity.setAdapter(adapter);
+//        //设置titleCity的文字大小及颜色
+//        String[] cityId = getResources().getStringArray(R.array.cityId);
+//        SpinnerAdapter adapter = new SpinnerAdapter(this,
+//                android.R.layout.simple_spinner_item,cityId);
+//        titleCity.setAdapter(adapter);
 
         //spinner列表点击事件的监听
-        titleCity.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view,
-                                       int position, long id) {
-                String[] cityId = getResources().getStringArray(R.array.cityId);
-                requestWeather(cityId[position]);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {}
-        });
+//        titleCity.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//            @Override
+//            public void onItemSelected(AdapterView<?> parent, View view,
+//                                       int position, long id) {
+//                String[] cityId = getResources().getStringArray(R.array.cityId);
+//                requestWeather(cityId[position]);
+//            }
+//
+//            @Override
+//            public void onNothingSelected(AdapterView<?> parent) {}
+//        });
 
         //策划列表的监听
 
