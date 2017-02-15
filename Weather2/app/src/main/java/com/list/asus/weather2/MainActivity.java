@@ -1,18 +1,23 @@
 package com.list.asus.weather2;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -36,7 +41,7 @@ import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
 
-    private DrawerLayout mDrawerLayout;
+    public DrawerLayout mDrawerLayout;
     private ScrollView weatherLayout;
     private Spinner titleCity;
     private TextView titleUpdateLocTime, titleUpdateUtcTime,
@@ -47,6 +52,10 @@ public class MainActivity extends AppCompatActivity {
             dressSuggestionText, fluText, travelText, ultravioletText;
     private LinearLayout forecastDailyLayout;
     private ImageView backgroundPicImg;
+    private ImageButton tip_drawerLayout;
+    public SwipeRefreshLayout swipeRefreshLayout;
+
+    private NavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,8 +70,29 @@ public class MainActivity extends AppCompatActivity {
         }
         setContentView(R.layout.activity_main);
         initView();
-        String weatherId = titleCity.getSelectedItem().toString();
-        requestWeather(weatherId);  //请求，分析，显示数据
+        //第一版
+        //String weatherId = titleCity.getSelectedItem().toString();
+       // requestWeather(weatherId);  //请求，分析，显示数据
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String weatherString = prefs.getString("weather", null);
+        final String weatherId;
+        if (weatherString != null){
+            //有缓存时直接解析数据
+            Weather weather = Utility.handleWeatherResponse(weatherString);
+            weatherId = weather.basic.weatherId;
+        }else {
+            //无缓存时去服务器查询天气
+            weatherId = getIntent().getStringExtra("weather_id");
+            requestWeather(weatherId);
+        }
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                requestWeather(weatherId);
+            }
+        });
+
     }
 
     //初始化控件
@@ -101,6 +131,10 @@ public class MainActivity extends AppCompatActivity {
         //背景
         backgroundPicImg = (ImageView) findViewById(R.id.background_pic);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        tip_drawerLayout = (ImageButton) findViewById(R.id.tip_drawerLayout);
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh);
+        swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
+        navigationView = (NavigationView) findViewById(R.id.Nav_view);
 
         //设置titleCity的文字大小及颜色
         String[] cityId = getResources().getStringArray(R.array.cityId);
@@ -121,17 +155,38 @@ public class MainActivity extends AppCompatActivity {
             public void onNothingSelected(AdapterView<?> parent) {}
         });
 
+        //策划列表的监听
+        navigationView.setNavigationItemSelectedListener(new NavigationView
+                .OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(MenuItem item) {
+                switch (item.getItemId()){
+                    case R.id.chooseCity:
+                        Intent intent = new Intent(MainActivity.this, ChooseAreaActivity.class);
+                        startActivity(intent);
+                        finish();
+                        break;
+                    case R.id.nav_setting:
+                        break;
+                    case R.id.about:
+                        break;
+                }
+                return false;
+            }
+        });
+
         //背景图片初始化
-//        String backgroundPic = prefs.getString("background_pic", null);
-//        if (backgroundPic != null){
-//            Glide.with(this).load(backgroundPic).into(backgroundPicImg);
-//        } else {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String backgroundPic = prefs.getString("background_pic", null);
+        if (backgroundPic != null){
+            Glide.with(this).load(backgroundPic).into(backgroundPicImg);
+        } else {
             loadBackgroundPic();
-//        }
+        }
 
 
-        //策划提示符点击事件
-        mDrawerLayout.setOnClickListener(new View.OnClickListener() {
+        //侧滑提示符点击事件
+        tip_drawerLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mDrawerLayout.openDrawer(GravityCompat.START);
@@ -140,7 +195,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //根据城市id请求天气信息
-    private void requestWeather(String weatherId) {
+    public void requestWeather(String weatherId) {
         String weatherURl = "https://free-api.heweather.com/v5/weather?city="
                 + weatherId + "&key=2881ccb3103344c389011b756a3b2120";
         HttpUtil.sendOkHttpRequest(weatherURl, new Callback() {
@@ -153,6 +208,7 @@ public class MainActivity extends AppCompatActivity {
                     public void run() {
                         Toast.makeText(MainActivity.this, "获取天气信息失败",
                                 Toast.LENGTH_SHORT).show();
+                        swipeRefreshLayout.setRefreshing(false);
                     }
                 });
             }
@@ -172,9 +228,10 @@ public class MainActivity extends AppCompatActivity {
                             editor.apply();
                             showWeatherInfo(weather);
                         }else {
-                            Toast.makeText(MainActivity.this, "获取天气信息失败2",
+                            Toast.makeText(MainActivity.this, "获取天气信息失败",
                                     Toast.LENGTH_SHORT).show();
                         }
+                        swipeRefreshLayout.setRefreshing(false);
                     }
                 });
             }
@@ -195,6 +252,7 @@ public class MainActivity extends AppCompatActivity {
         String windDirection1 = "风向：" + weather.now.wind.windDirection1 + "°";
         String windDirection2 = "风向：" + weather.now.wind.windDirection2;
         String weatherInfo = weather.now.more.info;
+        String degree = weather.now.temperature + "℃";
         //titleCity.setText(cityName);
         titleUpdateLocTime.setText(updateLocTime);
         titleUpdateUtcTime.setText(updateUtcTime);
