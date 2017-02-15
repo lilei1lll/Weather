@@ -1,6 +1,7 @@
 package com.list.asus.weather2;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -90,14 +91,19 @@ public class ChooseAreaActivity extends AppCompatActivity {
                     queryCounties();
                 }else if (currentLevel == LEVEL_COUNTY){
                     String weatherId = countyList.get(position).getWeatherId();
-                    if (getBaseContext()instanceof ChooseAreaActivity){
+//                    if (getBaseContext()instanceof ChooseAreaActivity){
+//
+//                    }else if (getBaseContext() instanceof MainActivity){
+//                        MainActivity activity = (MainActivity) getBaseContext();
+//                        activity.mDrawerLayout.closeDrawers();
+//                        activity.swipeRefreshLayout.setRefreshing(true);
+//                        activity.requestWeather(weatherId);
+//                    }
+                    Intent intent = new Intent(ChooseAreaActivity.this, MainActivity.class);
+                    intent.putExtra("weather_id", weatherId);
+                    startActivity(intent);
+                    finish();
 
-                    }else if (getBaseContext() instanceof MainActivity){
-                        MainActivity activity = (MainActivity) getBaseContext();
-                        activity.mDrawerLayout.closeDrawers();
-                        activity.swipeRefreshLayout.setRefreshing(true);
-                        activity.requestWeather(weatherId);
-                    }
                 }
             }
         });
@@ -149,7 +155,7 @@ public class ChooseAreaActivity extends AppCompatActivity {
             currentLevel = LEVEL_CITY;
         }else{
             int provinceCode = selectedProvince.getProvinceCode();
-            String address = "http://guolin.tech/api/china"+provinceCode;
+            String address = "http://guolin.tech/api/china/"+ provinceCode;
             queryFromServer(address, "city");
         }
     }
@@ -170,7 +176,7 @@ public class ChooseAreaActivity extends AppCompatActivity {
         }else {
             int provinceCode = selectedProvince.getProvinceCode();
             int cityCode = selectedCity.getCityCode();
-            String address = "http://guolin.tech/api/china"+provinceCode+"/"+ cityCode;
+            String address = "http://guolin.tech/api/china/"+provinceCode+"/"+ cityCode;
             queryFromServer(address, "county");
         }
     }
@@ -195,7 +201,7 @@ public class ChooseAreaActivity extends AppCompatActivity {
             public void onResponse(Call call, Response response) throws IOException {
                 String responseText = response.body().string();
                 boolean result = false;
-                Log.d("TAG", "onResponse: " + responseText);
+                Log.d("???///", "onResponse: " + responseText);
                 if ("province".equals(type)){
                     Log.d("TAG", "onResponse: " + "22222222222222222");
                     result = Utility.handleProvinceResponse(responseText);
