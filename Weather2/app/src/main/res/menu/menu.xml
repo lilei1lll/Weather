@@ -14,5 +14,9 @@
             android:id="@+id/about"
             android:icon="@mipmap/ic_launcher"
             android:title="关于"/>
+        <item
+            android:id="@+id/lbs"
+            android:icon="@mipmap/ic_launcher"
+            android:title="定位"/>
     </group>
 </menu>

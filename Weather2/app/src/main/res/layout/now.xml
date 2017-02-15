@@ -34,13 +34,15 @@
     <ImageView
         android:layout_width="1dp"
         android:layout_height="50sp"
-        android:background="@android:color/white"/>
+        android:background="@android:color/white"
+        android:layout_marginLeft="5dp"/>
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical">
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="5dp">
 
         <TextView
             android:id="@+id/sensible_temp_text"
@@ -71,13 +73,15 @@
     <ImageView
         android:layout_width="1dp"
         android:layout_height="30sp"
-        android:background="@android:color/white"/>
+        android:background="@android:color/white"
+        android:layout_marginLeft="5dp"/>
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical">
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="5dp">
 
         <TextView
             android:id="@+id/wind_direction_text"

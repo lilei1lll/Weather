@@ -30,6 +30,7 @@ import com.list.asus.weather2.Adapter.HourlyForecastAdapter;
 import com.list.asus.weather2.Adapter.SpinnerAdapter;
 import com.list.asus.weather2.gson.DailyForecast;
 import com.list.asus.weather2.gson.Weather;
+import com.list.asus.weather2.service.AutoUpdateService;
 import com.list.asus.weather2.util.HttpUtil;
 import com.list.asus.weather2.util.Utility;
 
@@ -47,7 +48,9 @@ public class MainActivity extends AppCompatActivity {
     private TextView titleUpdateLocTime, titleUpdateUtcTime,
             degreeText, weatherInfoText, sensibleTempText,
             relativeHumidityText, precipitationText, windDirection1Text, windDirection2Text,
+            //AQI
             aqiText, no2Text, o3Text, pm10Text, pm25Text, qltyText,so2Text,
+            //Suggestion
             airText, comfortText, carWashText, sportText,
             dressSuggestionText, fluText, travelText, ultravioletText;
     private LinearLayout forecastDailyLayout;
@@ -317,12 +320,15 @@ public class MainActivity extends AppCompatActivity {
         ultravioletText.setText(ultraviolet);
         travelText.setText(travel);
         weatherLayout.setVisibility(View.VISIBLE);
+        //开启后台服务，进行更新
+        Intent intent = new Intent(this, AutoUpdateService.class);
+        startService(intent);
     }
 
     //加载背景图片
     public void loadBackgroundPic() {
-        String requestBackgroungPic = "http://guolin.tech/api/bing_pic";
-        HttpUtil.sendOkHttpRequest(requestBackgroungPic, new Callback() {
+        String requestBackgroundPic = "http://guolin.tech/api/bing_pic";
+        HttpUtil.sendOkHttpRequest(requestBackgroundPic, new Callback() {
 
             @Override
             public void onFailure(Call call, IOException e) {
