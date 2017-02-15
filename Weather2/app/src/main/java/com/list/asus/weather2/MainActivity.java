@@ -1,13 +1,22 @@
 package com.list.asus.weather2;
 
+import android.Manifest;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+<<<<<<< HEAD
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
+=======
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+>>>>>>> a397183a4488ac116e8541fe9167d5317a7a6dbb
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -15,24 +24,27 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.baidu.location.BDLocation;
+import com.baidu.location.BDLocationListener;
+import com.baidu.location.LocationClient;
+import com.baidu.location.LocationClientOption;
 import com.bumptech.glide.Glide;
 import com.list.asus.weather2.Adapter.HourlyForecastAdapter;
-import com.list.asus.weather2.Adapter.SpinnerAdapter;
 import com.list.asus.weather2.gson.DailyForecast;
 import com.list.asus.weather2.gson.Weather;
+import com.list.asus.weather2.service.AutoUpdateService;
 import com.list.asus.weather2.util.HttpUtil;
 import com.list.asus.weather2.util.Utility;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -42,19 +54,19 @@ public class MainActivity extends AppCompatActivity {
 
     public DrawerLayout mDrawerLayout;
     private ScrollView weatherLayout;
-    private TextView titleCity;
-    private TextView titleUpdateLocTime, titleUpdateUtcTime,
+    private TextView titleUpdateLocTime, titleUpdateUtcTime, cityNameText,
             degreeText, weatherInfoText, sensibleTempText,
             relativeHumidityText, precipitationText, windDirection1Text, windDirection2Text,
+            //AQI
             aqiText, no2Text, o3Text, pm10Text, pm25Text, qltyText,so2Text,
+            //Suggestion
             airText, comfortText, carWashText, sportText,
             dressSuggestionText, fluText, travelText, ultravioletText;
     private LinearLayout forecastDailyLayout;
     private ImageView backgroundPicImg;
-    private ImageButton tip_drawerLayout;
     public SwipeRefreshLayout swipeRefreshLayout;
 
-    private NavigationView navigationView;
+    private LocationClient mLocationClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
         }
         setContentView(R.layout.activity_main);
         initView();
-
+        initLbs();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String weatherString = prefs.getString("weather", null);
         final String weatherId;
@@ -77,9 +89,11 @@ public class MainActivity extends AppCompatActivity {
             //有缓存时直接解析数据
             Weather weather = Utility.handleWeatherResponse(weatherString);
             weatherId = weather.basic.weatherId;
+            showWeatherInfo(weather);
         }else {
             //无缓存时去服务器查询天气
             weatherId = getIntent().getStringExtra("weather_id");
+            weatherLayout.setVisibility(View.INVISIBLE);
             requestWeather(weatherId);
         }
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -94,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
     //初始化控件
     private void initView() {
         weatherLayout = (ScrollView) findViewById(R.id.weather_layout);
-        titleCity = (TextView) findViewById(R.id.city_name_text);
+        cityNameText = (TextView) findViewById(R.id.city_name_text);
         titleUpdateLocTime = (TextView) findViewById(R.id.title_update_loc_time);
         titleUpdateUtcTime = (TextView) findViewById(R.id.title_update_utc_time);
         //Now
@@ -127,10 +141,10 @@ public class MainActivity extends AppCompatActivity {
         //背景
         backgroundPicImg = (ImageView) findViewById(R.id.background_pic);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        tip_drawerLayout = (ImageButton) findViewById(R.id.tip_drawerLayout);
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh);
         swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
 
+<<<<<<< HEAD
 //        //设置titleCity的文字大小及颜色
 //        String[] cityId = getResources().getStringArray(R.array.cityId);
 //        SpinnerAdapter adapter = new SpinnerAdapter(this,
@@ -163,6 +177,8 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
+=======
+>>>>>>> a397183a4488ac116e8541fe9167d5317a7a6dbb
         //背景图片初始化
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String backgroundPic = prefs.getString("background_pic", null);
@@ -172,14 +188,6 @@ public class MainActivity extends AppCompatActivity {
             loadBackgroundPic();
         }
 
-
-        //侧滑提示符点击事件
-        tip_drawerLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mDrawerLayout.openDrawer(GravityCompat.START);
-            }
-        });
     }
 
     //根据城市id请求天气信息
@@ -194,7 +202,7 @@ public class MainActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(MainActivity.this, "获取天气信息失败",
+                        Toast.makeText(MainActivity.this, "获取天气信息失败failure",
                                 Toast.LENGTH_SHORT).show();
                         swipeRefreshLayout.setRefreshing(false);
                     }
@@ -230,7 +238,7 @@ public class MainActivity extends AppCompatActivity {
 
     //处理并展示Weather实体类中的数据
     private void showWeatherInfo(Weather weather) {
-        //String cityName = weather.basic.cityName;
+        String cityName = weather.basic.cityName;
         String updateLocTime = "loc：" + weather.basic.update.updateLocTime;
         String updateUtcTime = "utc：" + weather.basic.update.updateUtcTime;
         String degree = weather.now.temperature + "℃";
@@ -240,7 +248,7 @@ public class MainActivity extends AppCompatActivity {
         String windDirection1 = "风向：" + weather.now.wind.windDirection1 + "°";
         String windDirection2 = "风向：" + weather.now.wind.windDirection2;
         String weatherInfo = weather.now.more.info;
-        //titleCity.setText(cityName);
+        cityNameText.setText(cityName);
         titleUpdateLocTime.setText(updateLocTime);
         titleUpdateUtcTime.setText(updateUtcTime);
         degreeText.setText(degree);
@@ -308,12 +316,15 @@ public class MainActivity extends AppCompatActivity {
         ultravioletText.setText(ultraviolet);
         travelText.setText(travel);
         weatherLayout.setVisibility(View.VISIBLE);
+        //开启后台服务，进行更新
+        Intent intent = new Intent(this, AutoUpdateService.class);
+        startService(intent);
     }
 
     //加载背景图片
     public void loadBackgroundPic() {
-        String requestBackgroungPic = "http://guolin.tech/api/bing_pic";
-        HttpUtil.sendOkHttpRequest(requestBackgroungPic, new Callback() {
+        String requestBackgroundPic = "http://guolin.tech/api/bing_pic";
+        HttpUtil.sendOkHttpRequest(requestBackgroundPic, new Callback() {
 
             @Override
             public void onFailure(Call call, IOException e) {
@@ -336,5 +347,90 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+    /**
+     * --------------------------------------------------------------------------------------------
+     **/
+    //获取位置，定位
+    private void initLbs() {
+        mLocationClient = new LocationClient(getApplicationContext());
+        mLocationClient.registerLocationListener(new MyLocationListener());  //注册定位监听器
+        List<String> permissionList = new ArrayList<>();  //将没有授权的添加到List集合中
+        if (ContextCompat.checkSelfPermission(MainActivity.this,
+                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            permissionList.add(Manifest.permission.ACCESS_FINE_LOCATION);
+        }
+        if (ContextCompat.checkSelfPermission(MainActivity.this,
+                Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            permissionList.add(Manifest.permission.READ_PHONE_STATE);
+        }
+        if (ContextCompat.checkSelfPermission(MainActivity.this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            permissionList.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        }
+        if (!permissionList.isEmpty()) {
+            //将List再转换为数组，并通过ActivityCompat提交
+            String [] permissions = permissionList.toArray(new String[permissionList.size()]);
+            ActivityCompat.requestPermissions(MainActivity.this, permissions, 1);
+        } else {
+            requestLocation();
+        }
+    }
+    //开始定位
+    private void requestLocation() {
+        initLocation();
+        mLocationClient.start();
+    }
+
+    private void initLocation() {
+        LocationClientOption option = new LocationClientOption();
+        //option.setScanSpan(5000);  //每5秒更新一下位置,设置更新的时间间隔
+        option.setIsNeedAddress(true);  //获取当前位置的详细地址信息
+        mLocationClient.setLocOption(option);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mLocationClient.stop();  //停止定位
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case 1:
+                if (grantResults.length > 0) {
+                    for (int result : grantResults) {
+                        if (result != PackageManager.PERMISSION_GRANTED) {
+                            Toast.makeText(this, "必须同意所有权限才能使用本程序",
+                                    Toast.LENGTH_SHORT).show();
+                            finish();
+                            return;
+                        }
+                    }
+                    requestLocation();
+                } else {
+                    Toast.makeText(this, "发生未知错误", Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+                break;
+            default:
+        }
+    }
+    //监听器
+    public class MyLocationListener implements BDLocationListener {
+
+        @Override
+        public void onReceiveLocation(BDLocation bdLocation) {
+            String weatherLocation = bdLocation.getCity();
+            requestWeather(weatherLocation);
+        }
+
+        @Override
+        public void onConnectHotSpotMessage(String s, int i) {
+            return;
+        }
+    }
+
 
 }
