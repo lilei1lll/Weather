@@ -136,13 +136,11 @@ public class MainActivity extends AppCompatActivity {
         airText = (TextView) findViewById(R.id.air_text);
         travelText = (TextView) findViewById(R.id.travel_text);
         ultravioletText = (TextView) findViewById(R.id.ultraviolet_text);
-        //背景
-        backgroundPicImg = (ImageView) findViewById(R.id.background_pic);
+        //背景        backgroundPicImg = (ImageView) findViewById(R.id.background_pic);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         tip_drawerLayout = (ImageButton) findViewById(R.id.tip_drawerLayout);
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh);
         swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
-        navigationView = (NavigationView) findViewById(R.id.Nav_view);
 
         //背景图片初始化
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
