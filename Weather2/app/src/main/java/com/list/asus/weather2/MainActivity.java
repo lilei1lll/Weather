@@ -70,9 +70,6 @@ public class MainActivity extends AppCompatActivity {
         }
         setContentView(R.layout.activity_main);
         initView();
-        //第一版
-        //String weatherId = titleCity.getSelectedItem().toString();
-       // requestWeather(weatherId);  //请求，分析，显示数据
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String weatherString = prefs.getString("weather", null);
@@ -252,7 +249,6 @@ public class MainActivity extends AppCompatActivity {
         String windDirection1 = "风向：" + weather.now.wind.windDirection1 + "°";
         String windDirection2 = "风向：" + weather.now.wind.windDirection2;
         String weatherInfo = weather.now.more.info;
-        String degree = weather.now.temperature + "℃";
         //titleCity.setText(cityName);
         titleUpdateLocTime.setText(updateLocTime);
         titleUpdateUtcTime.setText(updateUtcTime);
