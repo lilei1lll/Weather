@@ -8,9 +8,15 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+<<<<<<< HEAD
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+=======
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+>>>>>>> a397183a4488ac116e8541fe9167d5317a7a6dbb
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -138,6 +144,41 @@ public class MainActivity extends AppCompatActivity {
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh);
         swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
 
+<<<<<<< HEAD
+//        //设置titleCity的文字大小及颜色
+//        String[] cityId = getResources().getStringArray(R.array.cityId);
+//        SpinnerAdapter adapter = new SpinnerAdapter(this,
+//                android.R.layout.simple_spinner_item,cityId);
+//        titleCity.setAdapter(adapter);
+
+        //spinner列表点击事件的监听
+//        titleCity.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//            @Override
+//            public void onItemSelected(AdapterView<?> parent, View view,
+//                                       int position, long id) {
+//                String[] cityId = getResources().getStringArray(R.array.cityId);
+//                requestWeather(cityId[position]);
+//            }
+//
+//            @Override
+//            public void onNothingSelected(AdapterView<?> parent) {}
+//        });
+
+        //策划列表的监听
+
+
+        //FloatingActionButton的点击监听事件
+        FloatingActionButton floatingActionButton = (FloatingActionButton) findViewById(R.id.add_floatingActionButton);
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                
+            }
+        });
+
+
+=======
+>>>>>>> a397183a4488ac116e8541fe9167d5317a7a6dbb
         //背景图片初始化
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String backgroundPic = prefs.getString("background_pic", null);
