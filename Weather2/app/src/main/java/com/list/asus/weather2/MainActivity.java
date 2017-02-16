@@ -12,6 +12,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -46,6 +47,7 @@ import java.util.List;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -142,14 +144,12 @@ public class MainActivity extends AppCompatActivity {
         swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
 
 
-
-
         //FloatingActionButton的点击监听事件
         FloatingActionButton floatingActionButton = (FloatingActionButton) findViewById(R.id.add_floatingActionButton);
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                
+                ChooseActivity.actionStart(MainActivity.this);
             }
         });
 
@@ -257,6 +257,7 @@ public class MainActivity extends AppCompatActivity {
         HourlyForecastAdapter hourlyForecastAdapter =
                 new HourlyForecastAdapter(weather.hourlyForecastList);
         recyclerView.setAdapter(hourlyForecastAdapter);
+
         if (weather.aqi != null){
             aqiText.setText(weather.aqi.city.aqi);
             no2Text.setText(weather.aqi.city.no2);

@@ -12,7 +12,25 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <include layout="@layout/choose_title_layout"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+                <com.list.asus.weather2.util.TitleLayout
+                    android:background="@color/background"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/choose_activity_recycler_view"
+                    android:layout_weight="1"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp">
+                </android.support.v7.widget.RecyclerView>
+
+        </LinearLayout>
+
 
         <fragment
             android:id="@+id/choose_area_fragment"
