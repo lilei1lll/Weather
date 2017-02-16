@@ -10,20 +10,22 @@ import android.widget.TextView;
 
 import com.list.asus.weather2.R;
 
-/**
- * Created by HP on 2017/2/15.
- */
 
 public class TitleLayout extends LinearLayout {
     public TitleLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
         LayoutInflater.from(context).inflate(R.layout.choose_title_layout, this);
+
+
         TextView backText = (TextView) findViewById(R.id.back_text);
+
+
         backText.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 ((Activity) getContext()).finish();
             }
         });
+
     }
 }

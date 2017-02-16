@@ -8,6 +8,9 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
@@ -141,7 +144,6 @@ public class MainActivity extends AppCompatActivity {
         swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
 
 
-
         //FloatingActionButton的点击监听事件
         FloatingActionButton floatingActionButton = (FloatingActionButton) findViewById(R.id.add_floatingActionButton);
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
@@ -255,6 +257,7 @@ public class MainActivity extends AppCompatActivity {
         HourlyForecastAdapter hourlyForecastAdapter =
                 new HourlyForecastAdapter(weather.hourlyForecastList);
         recyclerView.setAdapter(hourlyForecastAdapter);
+
         if (weather.aqi != null){
             aqiText.setText(weather.aqi.city.aqi);
             no2Text.setText(weather.aqi.city.no2);
