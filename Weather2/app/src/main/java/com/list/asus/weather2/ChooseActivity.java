@@ -1,16 +1,15 @@
 package com.list.asus.weather2;
 
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.content.Context;
-import android.content.Intent;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.list.asus.weather2.Adapter.ChooseActivityRecyclerViewAdapter;
@@ -63,13 +62,13 @@ public class ChooseActivity extends AppCompatActivity {
         ChooseActivityRecyclerViewAdapter adapter = new ChooseActivityRecyclerViewAdapter(ChoosedList);
         ChooseRecyclerVew.setAdapter(adapter);
 
-        Button delete = (Button) findViewById(R.id.choose_activity_delete_button);
+        /*Button delete = (Button) findViewById(R.id.choose_activity_delete_button);
         delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 C.cityNameArry.remove(v);
             }
-        });
+        });*/
 
     }
 

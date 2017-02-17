@@ -4,21 +4,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
-import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
@@ -40,6 +26,8 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
+import static android.preference.PreferenceManager.getDefaultSharedPreferences;
+
 
 public class MainActivity extends FragmentActivity {
 
@@ -50,6 +38,7 @@ public class MainActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getArray();
         //对API进行判断
         if (Build.VERSION.SDK_INT >= 21) {
             View decorView = getWindow().getDecorView();
@@ -64,7 +53,7 @@ public class MainActivity extends FragmentActivity {
 
         //背景图片初始化
         backgroundPicImg = (ImageView) findViewById(R.id.background_pic);
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences prefs = getDefaultSharedPreferences(this);
         String backgroundPic = prefs.getString("background_pic", null);
         if (backgroundPic != null){
             Glide.with(this).load(backgroundPic).into(backgroundPicImg);
@@ -87,7 +76,7 @@ public class MainActivity extends FragmentActivity {
 
         viewPager = (ViewPager) findViewById(R.id.view_pager);
         List<Fragment> fragList = new ArrayList<Fragment>();
-        for (int i=1; i<4;i++) {
+        for (String arrayList : C.cityNameArry) {
             Fragments frag = new Fragments();
             fragList.add(frag);
         }
@@ -109,8 +98,8 @@ public class MainActivity extends FragmentActivity {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 final String backgroundPic = response.body().string();
-                SharedPreferences.Editor editor = PreferenceManager
-                        .getDefaultSharedPreferences(MainActivity.this).edit();
+                SharedPreferences.Editor editor =
+                        getDefaultSharedPreferences(MainActivity.this).edit();
                 editor.putString("backgroundPic", backgroundPic);
                 editor.apply();
                 runOnUiThread(new Runnable() {
@@ -127,32 +116,36 @@ public class MainActivity extends FragmentActivity {
 //------------------------------读取，保存选择过的城市---------------------------------------
     //存储数据
     public  void saveArray(ArrayList<String> StringArray) {
-        SharedPreferences prefs = getSharedPreferences("choosedCityArray", MODE_PRIVATE);
+
         JSONArray jsonArray = new JSONArray();
         for (String b : StringArray) {
             jsonArray.put(b);
         }
-        SharedPreferences.Editor editor = prefs.edit();
+        SharedPreferences.Editor editor =
+                getSharedPreferences("choosedCityArray",MODE_PRIVATE).edit();
         editor.putString("choosedCityArray",jsonArray.toString());
-        editor.commit();
+        editor.apply();
     }
 
     //读取数据
-    public  ArrayList<String> getArray() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+    public  void getArray() {
+        SharedPreferences prefs = getSharedPreferences("choosedCityArray",MODE_PRIVATE);
         try {
-            JSONArray jsonArray = new JSONArray(prefs.getString("choosedCityArray", "[]"));
+            JSONArray jsonArray = new JSONArray(prefs.getString("choosedCityArray", null));
             if (jsonArray != null){
-                ArrayList<String> resArray = new ArrayList<>();
                 for (int i = 0; i < jsonArray.length(); i++) {
-                    resArray.add(jsonArray.getString(i));
+                    C.add(C.cityNameArry,jsonArray.getString(i));
                 }
-                return resArray;
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return null;
+    }
+
+    @Override
+    protected void onDestroy() {
+        saveArray(C.cityNameArry);
+        super.onDestroy();
     }
 
 }
