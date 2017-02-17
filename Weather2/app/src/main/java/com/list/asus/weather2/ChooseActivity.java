@@ -1,8 +1,11 @@
 package com.list.asus.weather2;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -11,11 +14,12 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -24,7 +28,8 @@ import com.baidu.location.BDLocation;
 import com.baidu.location.BDLocationListener;
 import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
-import com.list.asus.weather2.Adapter.ChooseActivityRecyclerViewAdapter;
+
+import org.json.JSONArray;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -76,13 +81,37 @@ public class ChooseActivity extends AppCompatActivity {
         *从C中初始化ChoosedList
         */
         ChoosedList = C.cityNameArry;
+        saveArray(C.cityNameArry);
 
-        RecyclerView ChooseRecyclerVew = (RecyclerView)
-                findViewById(R.id.choose_activity_recycler_view);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        ChooseRecyclerVew.setLayoutManager(layoutManager);
-        ChooseActivityRecyclerViewAdapter adapter = new ChooseActivityRecyclerViewAdapter(ChoosedList);
-        ChooseRecyclerVew.setAdapter(adapter);
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+                ChooseActivity.this, android.R.layout.simple_list_item_1, ChoosedList);
+        ListView listView =(ListView) findViewById(R.id.choose_activity_liet_view);
+        listView.setAdapter(adapter);
+
+        //listview长按监听
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, final View view,
+                                           final int position, long id) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(ChooseActivity.this);
+                builder.setTitle("提示");
+                builder.setMessage("确定删除");
+                builder.setNegativeButton("确认",
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                C.cityNameArry.remove(position);
+                                Log.d("remove","arry"+C.cityNameArry);
+                                ChooseActivity.actionStart(ChooseActivity.this);
+                            }
+                        });
+                builder.setPositiveButton("取消", null);
+                builder.create().show();
+                return true;
+            }
+        });
+
 
     }
 
@@ -181,5 +210,17 @@ public class ChooseActivity extends AppCompatActivity {
         super.onDestroy();
         mLocationClient.stop();  //停止定位
     }
-
+    /**
+    * ---------------------------------------------------------------------------------------------
+    **/
+    public  void saveArray(ArrayList<String> StringArray) {
+        JSONArray jsonArray = new JSONArray();
+        for (String b : StringArray) {
+            jsonArray.put(b);
+        }
+        SharedPreferences.Editor editor =
+                getSharedPreferences("choosedCityArray",MODE_PRIVATE).edit();
+        editor.putString("choosedCityArray",jsonArray.toString());
+        editor.apply();
+    }
 }

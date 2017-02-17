@@ -113,19 +113,13 @@ public class MainActivity extends FragmentActivity {
         });
     }
 
-//------------------------------读取，保存选择过的城市---------------------------------------
-    //存储数据
-    public  void saveArray(ArrayList<String> StringArray) {
-        JSONArray jsonArray = new JSONArray();
-        for (String b : StringArray) {
-            jsonArray.put(b);
-        }
-        SharedPreferences.Editor editor =
-                getSharedPreferences("choosedCityArray",MODE_PRIVATE).edit();
-        editor.putString("choosedCityArray",jsonArray.toString());
-        editor.apply();
+    @Override
+    public void onBackPressed() {
+        finish();
+        super.onBackPressed();
     }
 
+    //------------------------------读取选择过的城市---------------------------------------
     //读取数据
     public  void getArray() {
         SharedPreferences prefs = getSharedPreferences("choosedCityArray",MODE_PRIVATE);
@@ -143,7 +137,6 @@ public class MainActivity extends FragmentActivity {
 
     @Override
     protected void onDestroy() {
-        saveArray(C.cityNameArry);
         super.onDestroy();
     }
 

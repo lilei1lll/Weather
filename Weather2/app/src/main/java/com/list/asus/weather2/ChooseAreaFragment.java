@@ -1,6 +1,7 @@
 package com.list.asus.weather2;
 
 import android.app.ProgressDialog;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -20,6 +21,7 @@ import com.list.asus.weather2.db.Province;
 import com.list.asus.weather2.util.HttpUtil;
 import com.list.asus.weather2.util.Utility;
 
+import org.json.JSONArray;
 import org.litepal.crud.DataSupport;
 
 import java.io.IOException;
@@ -29,6 +31,8 @@ import java.util.List;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
+
+import static android.content.Context.MODE_PRIVATE;
 
 public class ChooseAreaFragment extends Fragment {
 
@@ -97,6 +101,7 @@ public class ChooseAreaFragment extends Fragment {
                     //侧滑最后一级：点击城市，关闭策划，存储数据
                     String cityId = countyList.get(position).getCountyName();
                     C.add(C.cityNameArry, cityId);
+                    saveArray(C.cityNameArry);
                     ChooseActivity.actionStart(getContext());
                     getActivity().finish();
                     }
@@ -238,6 +243,17 @@ public class ChooseAreaFragment extends Fragment {
         if (progressDialog != null){
             progressDialog.dismiss();
         }
+    }
+
+    public  void saveArray(ArrayList<String> StringArray) {
+        JSONArray jsonArray = new JSONArray();
+        for (String b : StringArray) {
+            jsonArray.put(b);
+        }
+        SharedPreferences.Editor editor =
+                getActivity().getSharedPreferences("choosedCityArray",MODE_PRIVATE).edit();
+        editor.putString("choosedCityArray",jsonArray.toString());
+        editor.apply();
     }
 
 }
