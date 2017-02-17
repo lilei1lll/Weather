@@ -1,19 +1,13 @@
 package com.list.asus.weather2.fragment;
 
-import android.Manifest;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,10 +16,6 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.baidu.location.BDLocation;
-import com.baidu.location.BDLocationListener;
-import com.baidu.location.LocationClient;
-import com.baidu.location.LocationClientOption;
 import com.list.asus.weather2.Adapter.HourlyForecastAdapter;
 import com.list.asus.weather2.R;
 import com.list.asus.weather2.gson.DailyForecast;
@@ -35,8 +25,6 @@ import com.list.asus.weather2.util.HttpUtil;
 import com.list.asus.weather2.util.Utility;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -47,6 +35,11 @@ import okhttp3.Response;
  */
 
 public class Fragments extends Fragment {
+
+    private String weatherIdCity;
+    public  void setweaId(String id){
+        weatherIdCity = id;
+    }
 
     private ScrollView weatherLayout;
     private TextView titleUpdateLocTime, titleUpdateUtcTime, cityNameText,
@@ -60,36 +53,23 @@ public class Fragments extends Fragment {
     private LinearLayout forecastDailyLayout;
     public SwipeRefreshLayout swipeRefreshLayout;
 
-    private LocationClient mLocationClient;
-
     private View view;
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.view_page_item, null);
 
         initView();
-        initLbs();
+        Log.d("123","onC"+weatherIdCity);
+        weatherLayout.setVisibility(View.INVISIBLE);
+        requestWeather(weatherIdCity);
 
-        SharedPreferences prefsWeather = PreferenceManager.getDefaultSharedPreferences(getContext());
-        String weatherString = prefsWeather.getString("weather", null);
-        final String weatherId;
-        if (weatherString != null){
-            //有缓存时直接解析数据
-            Weather weather = Utility.handleWeatherResponse(weatherString);
-            weatherId = weather.basic.weatherId;
-            showWeatherInfo(weather);
-        }else {
-            //无缓存时去服务器查询天气
-            weatherId = getActivity().getIntent().getStringExtra("weather_id");
-            weatherLayout.setVisibility(View.INVISIBLE);
-            requestWeather(weatherId);
-        }
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                requestWeather(weatherId);
+                requestWeather(weatherIdCity);
             }
         });
         return view;
@@ -135,7 +115,8 @@ public class Fragments extends Fragment {
     }
 
     //根据城市id请求天气信息
-    public void requestWeather(String weatherId) {
+    public void requestWeather(final String weatherId) {
+        Log.d("123456","req:" + weatherId);
         String weatherURl = "https://free-api.heweather.com/v5/weather?city="
                 + weatherId + "&key=2881ccb3103344c389011b756a3b2120";
         HttpUtil.sendOkHttpRequest(weatherURl, new Callback() {
@@ -154,18 +135,14 @@ public class Fragments extends Fragment {
             }
 
             @Override
-            public void onResponse(Call call, Response response) throws IOException {
+            public void onResponse(Call call, final Response response) throws IOException {
                 final String responseText = response.body().string();
                 final Weather weather = Utility.handleWeatherResponse(responseText);
+                Log.d("123456","12"+weather);
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         if (weather != null && "ok".equals(weather.status)){
-                            SharedPreferences.Editor editor = PreferenceManager
-                                    .getDefaultSharedPreferences(getActivity())
-                                    .edit();
-                            editor.putString("weather", responseText);
-                            editor.apply();
                             showWeatherInfo(weather);
                         }else {
                             Toast.makeText(getActivity(), "获取天气信息失败",
@@ -262,90 +239,5 @@ public class Fragments extends Fragment {
         Intent intent = new Intent(getActivity(), AutoUpdateService.class);
         getActivity().startService(intent);
     }
-    /**
-     * --------------------------------------------------------------------------------------------
-     **/
-    //获取位置，定位
-    private void initLbs() {
-        mLocationClient = new LocationClient(getContext().getApplicationContext());
-        mLocationClient.registerLocationListener(new MyLocationListener());  //注册定位监听器
-        List<String> permissionList = new ArrayList<>();  //将没有授权的添加到List集合中
-        if (ContextCompat.checkSelfPermission(getActivity(),
-                Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            permissionList.add(Manifest.permission.ACCESS_FINE_LOCATION);
-        }
-        if (ContextCompat.checkSelfPermission(getActivity(),
-                Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-            permissionList.add(Manifest.permission.READ_PHONE_STATE);
-        }
-        if (ContextCompat.checkSelfPermission(getActivity(),
-                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            permissionList.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        }
-        if (!permissionList.isEmpty()) {
-            //将List再转换为数组，并通过ActivityCompat提交
-            String [] permissions = permissionList.toArray(new String[permissionList.size()]);
-            ActivityCompat.requestPermissions(getActivity(), permissions, 1);
-        } else {
-            requestLocation();
-        }
-    }
-    //开始定位
-    private void requestLocation() {
-        initLocation();
-        mLocationClient.start();
-    }
-
-    private void initLocation() {
-        LocationClientOption option = new LocationClientOption();
-        //option.setScanSpan(5000);  //每5秒更新一下位置,设置更新的时间间隔
-        option.setIsNeedAddress(true);  //获取当前位置的详细地址信息
-        mLocationClient.setLocOption(option);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        mLocationClient.stop();  //停止定位
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case 1:
-                if (grantResults.length > 0) {
-                    for (int result : grantResults) {
-                        if (result != PackageManager.PERMISSION_GRANTED) {
-                            Toast.makeText(getContext(), "必须同意所有权限才能使用本程序",
-                                    Toast.LENGTH_SHORT).show();
-                            getActivity().finish();
-                            return;
-                        }
-                    }
-                    requestLocation();
-                } else {
-                    Toast.makeText(getContext(), "发生未知错误", Toast.LENGTH_SHORT).show();
-                    getActivity().finish();
-                }
-                break;
-            default:
-        }
-    }
-    //监听器
-    public class MyLocationListener implements BDLocationListener {
-
-        @Override
-        public void onReceiveLocation(BDLocation bdLocation) {
-            String weatherLocation = bdLocation.getCity();
-            requestWeather(weatherLocation);
-        }
-
-        @Override
-        public void onConnectHotSpotMessage(String s, int i) {
-            return;
-        }
-    }
-
 
 }

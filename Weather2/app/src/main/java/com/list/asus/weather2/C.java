@@ -1,10 +1,6 @@
 package com.list.asus.weather2;
 
-import android.util.Log;
-
 import java.util.ArrayList;
-
-import static android.content.ContentValues.TAG;
 
 
 public class C {
@@ -17,10 +13,22 @@ public class C {
             if (! a.equals(string)){
                 i++;
             }
-            Log.d(TAG, "add: "+string+a);
         }
         if (arrayList.size() == i){
             arrayList.add(string);
+        }
+    }
+    public static boolean Judge(ArrayList<String> arrayList, String string) {
+        int i=0;
+        for (String a: arrayList){
+            if (! a.equals(string)){
+                i++;
+            }
+        }
+        if (arrayList.size() == i){
+            return true;
+        } else {
+            return false;
         }
     }
 }
