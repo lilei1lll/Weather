@@ -1,10 +1,14 @@
 package com.list.asus.weather2;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +26,7 @@ import com.list.asus.weather2.db.Province;
 import com.list.asus.weather2.util.HttpUtil;
 import com.list.asus.weather2.util.Utility;
 
+import org.json.JSONArray;
 import org.litepal.crud.DataSupport;
 
 import java.io.IOException;
@@ -31,6 +36,8 @@ import java.util.List;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
+
+import static android.content.Context.MODE_PRIVATE;
 
 public class ChooseAreaFragment extends Fragment {
 
@@ -96,21 +103,14 @@ public class ChooseAreaFragment extends Fragment {
                     selectedCity = cityList.get(position);
                     queryCounties();
                 }else if (currentLevel == LEVEL_COUNTY){
-                    String weatherId = countyList.get(position).getWeatherId();
-//                    if (getBaseContext()instanceof ChooseAreaActivity){
-//
-//                    }else if (getBaseContext() instanceof MainActivity){
-//                        MainActivity activity = (MainActivity) getBaseContext();
-//                        activity.mDrawerLayout.closeDrawers();
-//                        activity.swipeRefreshLayout.setRefreshing(true);
-//                        activity.requestWeather(weatherId);
-//                    }
-                    Intent intent = new Intent(getActivity(), MainActivity.class);
-                    intent.putExtra("weather_id", weatherId);
-                    startActivity(intent);
-                    getActivity().finish();
+                    //侧滑最后一级：点击城市，关闭策划，存储数据
+                    String cityId = countyList.get(position).getCountyName();
+                    C.add(C.cityNameArry, cityId);
+                    DrawerLayout drawerLayout = (DrawerLayout) getActivity().findViewById(R.id.drawer_layout);
+                    drawerLayout.closeDrawer(GravityCompat.END);
+                    ChooseActivity.actionStart(getContext());
+                    }
                 }
-            }
         });
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -207,18 +207,13 @@ public class ChooseAreaFragment extends Fragment {
             public void onResponse(Call call, Response response) throws IOException {
                 String responseText = response.body().string();
                 boolean result = false;
-                Log.d("???///", "onResponse: " + responseText);
                 if ("province".equals(type)){
-                    Log.d("TAG", "onResponse: " + "22222222222222222");
                     result = Utility.handleProvinceResponse(responseText);
                 }else if ("city".equals(type)){
-                    Log.d("TAG", "onResponse: "+"33333333333333333333");
                     result = Utility.handleCityResponse(responseText, selectedProvince.getId());
                 }else if ("county".equals(type)){
-                    Log.d("TAG", "onResponse: "+"4444444444444444444444");
                     result = Utility.handleCountyResponse(responseText, selectedCity.getId());
                 }
-                Log.d("TAG", "onResponse: "+"11111111111111111111111111111111");
                 if (result){
                     getActivity().runOnUiThread(new Runnable() {
                         @Override

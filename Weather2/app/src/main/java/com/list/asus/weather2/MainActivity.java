@@ -20,6 +20,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -39,6 +40,8 @@ import com.list.asus.weather2.gson.Weather;
 import com.list.asus.weather2.service.AutoUpdateService;
 import com.list.asus.weather2.util.HttpUtil;
 import com.list.asus.weather2.util.Utility;
+
+import org.json.JSONArray;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -83,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
         initLbs();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String weatherString = prefs.getString("weather", null);
-        final String weatherId;
+        String weatherId;
         if (weatherString != null){
             //有缓存时直接解析数据
             Weather weather = Utility.handleWeatherResponse(weatherString);
@@ -91,14 +94,14 @@ public class MainActivity extends AppCompatActivity {
             showWeatherInfo(weather);
         }else {
             //无缓存时去服务器查询天气
-            weatherId = getIntent().getStringExtra("weather_id");
-            weatherLayout.setVisibility(View.INVISIBLE);
-            requestWeather(weatherId);
+           // weatherId = getIntent().getStringExtra("weather_id");
+//            weatherLayout.setVisibility(View.INVISIBLE);
+//            requestWeather(weatherId);
         }
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                requestWeather(weatherId);
+                //requestWeather(weatherId);
             }
         });
 
@@ -150,6 +153,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 ChooseActivity.actionStart(MainActivity.this);
+                finish();
             }
         });
 
@@ -368,6 +372,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         mLocationClient.stop();  //停止定位
+
+        saveArray(C.cityNameArry); //保存最终数据
     }
 
     @Override
@@ -400,6 +406,13 @@ public class MainActivity extends AppCompatActivity {
         public void onReceiveLocation(BDLocation bdLocation) {
             String weatherLocation = bdLocation.getCity();
             requestWeather(weatherLocation);
+
+            if (C.cityNameArry.size() < getArray().size()){  //保证数据不丢失
+                C.cityNameArry = getArray();
+            }
+            C.add(C.cityNameArry, weatherLocation);
+            saveArray(C.cityNameArry);
+            Log.d("TAG", "onReceiveLocation: "+ C.cityNameArry);
         }
 
         @Override
@@ -408,5 +421,36 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+//------------------------------读取，保存选择过的城市---------------------------------------
+    //存储数据
+    public  void saveArray(ArrayList<String> StringArray) {
+        SharedPreferences prefs = getSharedPreferences("choosedCityArray", MODE_PRIVATE);
+        JSONArray jsonArray = new JSONArray();
+        for (String b : StringArray) {
+            jsonArray.put(b);
+        }
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString("choosedCityArray",jsonArray.toString());
+        editor.commit();
+    }
+
+    //读取数据
+    public  ArrayList<String> getArray() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+        try {
+            JSONArray jsonArray = new JSONArray(prefs.getString("choosedCityArray", "[]"));
+            if (jsonArray != null){
+                ArrayList<String> resArray = new ArrayList<>();
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    resArray.add(jsonArray.getString(i));
+                }
+                return resArray;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+//---------------------------------------------------------------------------------------
 
 }
