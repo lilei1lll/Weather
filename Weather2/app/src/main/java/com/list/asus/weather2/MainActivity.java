@@ -1,6 +1,7 @@
 package com.list.asus.weather2;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -210,21 +211,17 @@ public class MainActivity extends FragmentActivity {
         public void onConnectHotSpotMessage(String s, int i) {
             return;
         }
+
+
     }
 
-//------------------------------读取，保存选择过的城市---------------------------------------
-    //存储数据
-    public  void saveArray(ArrayList<String> StringArray) {
-        JSONArray jsonArray = new JSONArray();
-        for (String b : StringArray) {
-            jsonArray.put(b);
-        }
-        SharedPreferences.Editor editor =
-                getSharedPreferences("choosedCityArray",MODE_PRIVATE).edit();
-        editor.putString("choosedCityArray",jsonArray.toString());
-        editor.apply();
+    @Override
+    public void onBackPressed() {
+        finish();
+        super.onBackPressed();
     }
 
+    //------------------------------读取选择过的城市---------------------------------------
     //读取数据
     public  void getArray() {
         SharedPreferences prefs = getSharedPreferences("choosedCityArray",MODE_PRIVATE);
@@ -242,7 +239,6 @@ public class MainActivity extends FragmentActivity {
 
     @Override
     protected void onDestroy() {
-        saveArray(C.cityNameArry);
         super.onDestroy();
         mLocationClient.stop();  //停止定位
     }
