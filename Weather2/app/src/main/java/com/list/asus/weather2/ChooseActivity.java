@@ -8,7 +8,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -45,6 +44,7 @@ public class ChooseActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(ChooseActivity.this, MainActivity.class);
                 startActivity(intent);
+                finish();
             }
         });
 
@@ -53,22 +53,12 @@ public class ChooseActivity extends AppCompatActivity {
         */
         ChoosedList = C.cityNameArry;
 
-        Log.d("TAG", "ChoosedActivity: "+ChoosedList);
-
         RecyclerView ChooseRecyclerVew = (RecyclerView)
                 findViewById(R.id.choose_activity_recycler_view);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         ChooseRecyclerVew.setLayoutManager(layoutManager);
         ChooseActivityRecyclerViewAdapter adapter = new ChooseActivityRecyclerViewAdapter(ChoosedList);
         ChooseRecyclerVew.setAdapter(adapter);
-
-        /*Button delete = (Button) findViewById(R.id.choose_activity_delete_button);
-        delete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                C.cityNameArry.remove(v);
-            }
-        });*/
 
     }
 
@@ -77,4 +67,10 @@ public class ChooseActivity extends AppCompatActivity {
         context.startActivity(intent);
     }
 
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(ChooseActivity.this, MainActivity.class);
+        startActivity(intent);
+        finish();
+    }
 }

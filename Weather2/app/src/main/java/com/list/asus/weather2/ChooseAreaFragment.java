@@ -1,15 +1,9 @@
 package com.list.asus.weather2;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,7 +20,6 @@ import com.list.asus.weather2.db.Province;
 import com.list.asus.weather2.util.HttpUtil;
 import com.list.asus.weather2.util.Utility;
 
-import org.json.JSONArray;
 import org.litepal.crud.DataSupport;
 
 import java.io.IOException;
@@ -36,8 +29,6 @@ import java.util.List;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
-
-import static android.content.Context.MODE_PRIVATE;
 
 public class ChooseAreaFragment extends Fragment {
 
@@ -106,9 +97,8 @@ public class ChooseAreaFragment extends Fragment {
                     //侧滑最后一级：点击城市，关闭策划，存储数据
                     String cityId = countyList.get(position).getCountyName();
                     C.add(C.cityNameArry, cityId);
-                    DrawerLayout drawerLayout = (DrawerLayout) getActivity().findViewById(R.id.drawer_layout);
-                    drawerLayout.closeDrawer(GravityCompat.END);
                     ChooseActivity.actionStart(getContext());
+                    getActivity().finish();
                     }
                 }
         });
