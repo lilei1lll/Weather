@@ -6,6 +6,19 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
+import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
@@ -16,6 +29,8 @@ import com.bumptech.glide.Glide;
 import com.list.asus.weather2.Adapter.FragAdapter;
 import com.list.asus.weather2.fragment.Fragments;
 import com.list.asus.weather2.util.HttpUtil;
+
+import org.json.JSONArray;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -106,6 +121,38 @@ public class MainActivity extends FragmentActivity {
                 });
             }
         });
+    }
+
+
+//------------------------------读取，保存选择过的城市---------------------------------------
+    //存储数据
+    public  void saveArray(ArrayList<String> StringArray) {
+        SharedPreferences prefs = getSharedPreferences("choosedCityArray", MODE_PRIVATE);
+        JSONArray jsonArray = new JSONArray();
+        for (String b : StringArray) {
+            jsonArray.put(b);
+        }
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString("choosedCityArray",jsonArray.toString());
+        editor.commit();
+    }
+
+    //读取数据
+    public  ArrayList<String> getArray() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+        try {
+            JSONArray jsonArray = new JSONArray(prefs.getString("choosedCityArray", "[]"));
+            if (jsonArray != null){
+                ArrayList<String> resArray = new ArrayList<>();
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    resArray.add(jsonArray.getString(i));
+                }
+                return resArray;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 }
