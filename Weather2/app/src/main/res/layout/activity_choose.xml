@@ -19,6 +19,26 @@
 
 
                 <include layout="@layout/choose_title_layout"/>
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/white">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="3"
+                        android:layout_margin="5dp"
+                        android:text="自动定位"
+                        android:textSize="30sp"/>
+
+                    <ToggleButton
+                        android:id="@+id/lbs_button"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"/>
+                </LinearLayout>
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/choose_activity_recycler_view"
