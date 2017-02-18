@@ -14,7 +14,7 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.list.asus.weather2.Adapter.FragAdapter;
-import com.list.asus.weather2.fragment.Fragments;
+import com.list.asus.weather2.fragment.ViewPagersFragments;
 import com.list.asus.weather2.util.HttpUtil;
 
 import org.json.JSONArray;
@@ -40,6 +40,10 @@ public class MainActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getArray();
+        //防止第一次没有数据，设置一个默认数据
+        if (C.cityNameArry == null) {
+            C.add(C.cityNameArry,"北京");
+        }
         //对API进行判断
         if (Build.VERSION.SDK_INT >= 21) {
             View decorView = getWindow().getDecorView();
@@ -73,14 +77,13 @@ public class MainActivity extends FragmentActivity {
         });
 
     }
-
+    //初始化ViewPager，动态加载Fragment
     private void initViewPager() {
-
         viewPager = (ViewPager) findViewById(R.id.view_pager);
         viewPager.setOffscreenPageLimit(4);  //设置ViewPager的预加载数量为5，防止快速滑动造成的bug
         List<Fragment> fragList = new ArrayList<Fragment>();
         for (String arrayList : C.cityNameArry) {
-            Fragments frag = new Fragments();
+            ViewPagersFragments frag = new ViewPagersFragments();
             frag.setweaId(arrayList);
             fragList.add(frag);
         }

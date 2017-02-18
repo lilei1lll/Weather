@@ -9,12 +9,6 @@ public class Basic {
     @SerializedName("id")
     public String weatherId;
 
-    @SerializedName("lat")
-    public String latitude;  //纬度
-
-    @SerializedName("lon")
-    public String longitude;  //经度
-
     public Update update;
 
     public class Update{

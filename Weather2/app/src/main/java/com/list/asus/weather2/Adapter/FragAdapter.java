@@ -13,7 +13,8 @@ import java.util.List;
 public class FragAdapter extends FragmentStatePagerAdapter{
 
     private List<Fragment> mFragmentList;
-    public FragAdapter(FragmentManager fragmentManager, List<Fragment> fragmentList) {
+    public FragAdapter(FragmentManager fragmentManager,
+                       List<Fragment> fragmentList) {
         super(fragmentManager);
         this.mFragmentList = fragmentList;
     }

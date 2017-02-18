@@ -195,6 +195,7 @@ public class ChooseActivity extends AppCompatActivity {
         public void onReceiveLocation(BDLocation bdLocation) {
             String weatherLocation = bdLocation.getCity();
             C.add(C.cityNameArry,weatherLocation);
+            saveArray(C.cityNameArry);
         }
 
         @Override

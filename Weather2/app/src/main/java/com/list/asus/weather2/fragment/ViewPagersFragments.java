@@ -9,7 +9,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,7 +36,7 @@ import okhttp3.Response;
  * Created by HP on 2017/2/16.
  */
 
-public class Fragments extends Fragment {
+public class ViewPagersFragments extends Fragment {
 
     private String weatherIdCity;
     public  void setweaId(String id){
@@ -65,18 +64,17 @@ public class Fragments extends Fragment {
         view = inflater.inflate(R.layout.view_page_item, null);
 
         initView();
-        Log.d("123","onC"+weatherIdCity);
         weatherLayout.setVisibility(View.INVISIBLE);
-        if (C.Judge(C.cityNameArry,weatherIdCity)) {
-            SharedPreferences prefsWeather = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        SharedPreferences prefsWeather = PreferenceManager
+                .getDefaultSharedPreferences(getActivity());
+        String weatherString  = prefsWeather.getString("weather"+weatherIdCity,null);
+        if (C.Judge(C.cityNameArry,weatherIdCity) && weatherString != null) {
             Weather weather = Utility.
-                    handleWeatherResponse(prefsWeather.getString("weather"+weatherIdCity,null));
+                    handleWeatherResponse(weatherString);
             showWeatherInfo(weather);
-            Log.d("123","huan cun" + weather);
         } else {
             requestWeather(weatherIdCity);
         }
-
 
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -128,7 +126,6 @@ public class Fragments extends Fragment {
 
     //根据城市id请求天气信息
     public void requestWeather(final String weatherId) {
-        Log.d("123456","req:" + weatherId);
         String weatherURl = "https://free-api.heweather.com/v5/weather?city="
                 + weatherId + "&key=2881ccb3103344c389011b756a3b2120";
         HttpUtil.sendOkHttpRequest(weatherURl, new Callback() {

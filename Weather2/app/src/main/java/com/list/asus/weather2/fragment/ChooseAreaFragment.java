@@ -1,4 +1,4 @@
-package com.list.asus.weather2;
+package com.list.asus.weather2.fragment;
 
 import android.app.ProgressDialog;
 import android.content.SharedPreferences;
@@ -15,6 +15,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.list.asus.weather2.C;
+import com.list.asus.weather2.ChooseActivity;
+import com.list.asus.weather2.R;
 import com.list.asus.weather2.db.City;
 import com.list.asus.weather2.db.County;
 import com.list.asus.weather2.db.Province;
@@ -37,38 +40,28 @@ import static android.content.Context.MODE_PRIVATE;
 public class ChooseAreaFragment extends Fragment {
 
     public static final int LEVEL_PROVINCE = 0;
-
     public static final int LEVEL_CITY = 1;
-
     public static final int LEVEL_COUNTY = 2;
 
-    private ProgressDialog progressDialog;
+    private ProgressDialog progressDialog;  //进度条
 
     private TextView titleText;
-
     private Button backButton;
-
     private ListView listView;
-
     private ArrayAdapter<String> adapter;
-
     private List<String> dataList = new ArrayList<>();
 
     //省列表
     private List<Province> provinceList;
-
     //市列表
     private List<City> cityList;
-
     //县列表
     private List<County> countyList;
 
     //选中的省份
     private Province selectedProvince;
-
     //选中的城市
     private City selectedCity;
-
     //当前选中的级别
     private int currentLevel;
 
@@ -119,8 +112,6 @@ public class ChooseAreaFragment extends Fragment {
         });
         queryProvince();
     }
-
-
 
     //查询全国所有的省，优先从数据库查询，如果没有再到服务器上查询
     private void queryProvince() {
@@ -192,7 +183,7 @@ public class ChooseAreaFragment extends Fragment {
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        closeProgessDialog();
+                        closeProgressDialog();
                         Toast.makeText(getContext(), "加载失败", Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -213,7 +204,7 @@ public class ChooseAreaFragment extends Fragment {
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            closeProgessDialog();
+                            closeProgressDialog();
                             if("province".equals(type)){
                                 queryProvince();
                             }else if ("city".equals(type)){
@@ -239,12 +230,12 @@ public class ChooseAreaFragment extends Fragment {
     }
 
     //关闭进度对话框
-    private void closeProgessDialog() {
+    private void closeProgressDialog() {
         if (progressDialog != null){
             progressDialog.dismiss();
         }
     }
-
+    //保存数据
     public  void saveArray(ArrayList<String> StringArray) {
         JSONArray jsonArray = new JSONArray();
         for (String b : StringArray) {

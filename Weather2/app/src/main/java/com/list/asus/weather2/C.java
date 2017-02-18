@@ -22,14 +22,10 @@ public class C {
     public static boolean Judge(ArrayList<String> arrayList, String string) {
         int i=0;
         for (String a: arrayList){
-            if (! a.equals(string)){
-                i++;
+            if ( a.equals(string)){
+                return true;
             }
         }
-        if (arrayList.size() == i){
-            return true;
-        } else {
-            return false;
-        }
+        return false;
     }
 }
