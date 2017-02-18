@@ -14,7 +14,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -69,9 +68,7 @@ public class ChooseActivity extends AppCompatActivity {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     initLbs();
-                    Log.d("ischecked","123");
                 }else {
-                    Log.d("ischecked","456");
                 }
 
             }
@@ -81,10 +78,10 @@ public class ChooseActivity extends AppCompatActivity {
         *从C中初始化ChoosedList
         */
         ChoosedList = C.cityNameArry;
-        saveArray(C.cityNameArry);
 
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+
+        final ArrayAdapter<String> adapter = new ArrayAdapter<String>(
                 ChooseActivity.this, android.R.layout.simple_list_item_1, ChoosedList);
         ListView listView =(ListView) findViewById(R.id.choose_activity_liet_view);
         listView.setAdapter(adapter);
@@ -102,8 +99,8 @@ public class ChooseActivity extends AppCompatActivity {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 C.cityNameArry.remove(position);
-                                Log.d("remove","arry"+C.cityNameArry);
-                                ChooseActivity.actionStart(ChooseActivity.this);
+                                adapter.notifyDataSetChanged();
+                                saveArray(C.cityNameArry);
                             }
                         });
                 builder.setPositiveButton("取消", null);
@@ -208,7 +205,7 @@ public class ChooseActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mLocationClient.stop();  //停止定位
+//        mLocationClient.stop();  //停止定位
     }
     /**
     * ---------------------------------------------------------------------------------------------

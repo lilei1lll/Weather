@@ -18,6 +18,7 @@ public class C {
             arrayList.add(string);
         }
     }
+    //用于判断是否存在
     public static boolean Judge(ArrayList<String> arrayList, String string) {
         int i=0;
         for (String a: arrayList){

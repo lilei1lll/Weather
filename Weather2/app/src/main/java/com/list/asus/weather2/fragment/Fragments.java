@@ -1,7 +1,9 @@
 package com.list.asus.weather2.fragment;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -17,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.list.asus.weather2.Adapter.HourlyForecastAdapter;
+import com.list.asus.weather2.C;
 import com.list.asus.weather2.R;
 import com.list.asus.weather2.gson.DailyForecast;
 import com.list.asus.weather2.gson.Weather;
@@ -64,7 +67,16 @@ public class Fragments extends Fragment {
         initView();
         Log.d("123","onC"+weatherIdCity);
         weatherLayout.setVisibility(View.INVISIBLE);
-        requestWeather(weatherIdCity);
+        if (C.Judge(C.cityNameArry,weatherIdCity)) {
+            SharedPreferences prefsWeather = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            Weather weather = Utility.
+                    handleWeatherResponse(prefsWeather.getString("weather"+weatherIdCity,null));
+            showWeatherInfo(weather);
+            Log.d("123","huan cun" + weather);
+        } else {
+            requestWeather(weatherIdCity);
+        }
+
 
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -127,7 +139,7 @@ public class Fragments extends Fragment {
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(getActivity(), "获取天气信息失败failure",
+                        Toast.makeText(getActivity(), "无法连接数据，获取天气信息失败",
                                 Toast.LENGTH_SHORT).show();
                         swipeRefreshLayout.setRefreshing(false);
                     }
@@ -138,11 +150,15 @@ public class Fragments extends Fragment {
             public void onResponse(Call call, final Response response) throws IOException {
                 final String responseText = response.body().string();
                 final Weather weather = Utility.handleWeatherResponse(responseText);
-                Log.d("123456","12"+weather);
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         if (weather != null && "ok".equals(weather.status)){
+                            SharedPreferences.Editor editor = PreferenceManager
+                                    .getDefaultSharedPreferences(getActivity())
+                                    .edit();
+                            editor.putString("weather" + weatherId,responseText);
+                            editor.apply();
                             showWeatherInfo(weather);
                         }else {
                             Toast.makeText(getActivity(), "获取天气信息失败",

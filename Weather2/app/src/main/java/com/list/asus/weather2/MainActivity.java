@@ -27,6 +27,8 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
+import static android.preference.PreferenceManager.getDefaultSharedPreferences;
+
 
 public class MainActivity extends FragmentActivity {
 
@@ -52,7 +54,7 @@ public class MainActivity extends FragmentActivity {
 
         //背景图片初始化
         backgroundPicImg = (ImageView) findViewById(R.id.background_pic);
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences prefs = getDefaultSharedPreferences(this);
         String backgroundPic = prefs.getString("background_pic", null);
         if (backgroundPic != null){
             Glide.with(this).load(backgroundPic).into(backgroundPicImg);
@@ -75,6 +77,7 @@ public class MainActivity extends FragmentActivity {
     private void initViewPager() {
 
         viewPager = (ViewPager) findViewById(R.id.view_pager);
+        viewPager.setOffscreenPageLimit(4);  //设置ViewPager的预加载数量为5，防止快速滑动造成的bug
         List<Fragment> fragList = new ArrayList<Fragment>();
         for (String arrayList : C.cityNameArry) {
             Fragments frag = new Fragments();
@@ -100,8 +103,9 @@ public class MainActivity extends FragmentActivity {
             public void onResponse(Call call, Response response) throws IOException {
                 final String backgroundPic = response.body().string();
                 SharedPreferences.Editor editor = PreferenceManager
-                        .getDefaultSharedPreferences(MainActivity.this).edit();
-                editor.putString("backgroundPic", backgroundPic);
+                        .getDefaultSharedPreferences(MainActivity.this)
+                        .edit();
+                editor.putString("background_pic",backgroundPic);
                 editor.apply();
                 runOnUiThread(new Runnable() {
                     @Override
@@ -115,8 +119,8 @@ public class MainActivity extends FragmentActivity {
 
     @Override
     public void onBackPressed() {
-        finish();
         super.onBackPressed();
+        finish();
     }
 
     //------------------------------读取选择过的城市---------------------------------------
@@ -133,11 +137,6 @@ public class MainActivity extends FragmentActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
     }
 
 }

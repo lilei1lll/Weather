@@ -38,4 +38,5 @@ public class ViewsPagerAdapter extends PagerAdapter{
     public void destroyItem(ViewGroup container, int position, Object object) {
         container.removeView(pageList.get(position));
     }
+
 }
