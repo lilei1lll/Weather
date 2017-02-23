@@ -83,7 +83,7 @@ public class ChooseActivity extends AppCompatActivity {
 
         final ArrayAdapter<String> adapter = new ArrayAdapter<String>(
                 ChooseActivity.this, android.R.layout.simple_list_item_1, ChoosedList);
-        ListView listView =(ListView) findViewById(R.id.choose_activity_liet_view);
+        ListView listView =(ListView) findViewById(R.id.choose_activity_list_view);
         listView.setAdapter(adapter);
 
         //listview长按监听
