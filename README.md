@@ -50,7 +50,9 @@
 > 
 > 12.服务这一块，虽然实现了后台服务自动更新，但由于是后台，展现的效果不是很明显，所以对其的使用还只停留在书本上的那些简单的认知，这次实现天气的更新自己修改了时间，设置成了4小时更新，但这种自动更新我没能很好的去验证和体现，所以相对来说，服务这一块，欠缺的还很多
 > 
-> 13.这次学习，很明显学习了很多的新知识，虽然之前看书开始初步了解天气APP的制作，但到了真正做的时候，出现了很多问题，这次的天气制作，其实有很大一部分都是看的书上的，其他功能都是后来慢慢改加进去的，这次也暴露了不少问题，对新知识的掌握还是过于浅显，对之前学习得知识还不够牢固，欠缺很大程度的练习和熟练度，以后还得需要多敲代码。
+> 13.活动的跳转，活动的启动模式，由于动态加载Fragment，所以每次都需要重新启动主活动，这次在这个上的问题还比较大，最开始由于是标准启动模式，跳转后，出现了栈内重复启动活动，需要多次按下返回键，我改了几次活动的启动模式，但问题没解决，后来就用了最笨的方法，每一次跳转活动便结束这一个活动，按下返回键也结束这个活动，虽然这样解决了这个问题，但还是过于复杂，所以虽然很早之前就看了活动的启动模式，但此时才发现，这个很重要，而且要学的东西也很多，说到底，对这一个知识点掌握得还是太少。
+> 
+> 14.这次学习，很明显学习了很多的新知识，虽然之前看书开始初步了解天气APP的制作，但到了真正做的时候，出现了很多问题，这次的天气制作，其实有很大一部分都是看的书上的，其他功能都是后来慢慢改加进去的，这次也暴露了不少问题，对新知识的掌握还是过于浅显，对之前学习得知识还不够牢固，欠缺很大程度的练习和熟练度，以后还得需要多敲代码。
 
 ***
 
@@ -60,9 +62,9 @@
 ![](https://ooo.0o0.ooo/2017/02/23/58aeb8f982bd8.jpg)
 ![](https://ooo.0o0.ooo/2017/02/23/58aeb9065e946.jpg)
 ![](https://ooo.0o0.ooo/2017/02/23/58aeb9186f161.jpg)
-![](http://jycloud.9uads.com/web/GetObject.aspx?filekey=04afb1ca74fbd60fa59af34ab868c935)
+![](http://ojplrudb4.bkt.clouddn.com/5.png)
 ![](https://ooo.0o0.ooo/2017/02/23/58aeb93d62eeb.jpg)
-![](http://jycloud.9uads.com/web/GetObject.aspx?filekey=4e081573a848a4c63ebfd697b35cfc49)
-![](http://jycloud.9uads.com/web/GetObject.aspx?filekey=8094b9149c5060b922acc9ace6eb63c6)
-![](http://jycloud.9uads.com/web/GetObject.aspx?filekey=67c58d55fc3bbf59306cb698c6c1ac4e)
-![](http://jycloud.9uads.com/web/GetObject.aspx?filekey=cda77a07e256d38bfd69d055257ebc29)
+![](http://ojplrudb4.bkt.clouddn.com/7.png)
+![](http://ojplrudb4.bkt.clouddn.com/8.png)
+![](http://ojplrudb4.bkt.clouddn.com/9.png)
+![](http://ojplrudb4.bkt.clouddn.com/10.png)
