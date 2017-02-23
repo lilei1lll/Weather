@@ -39,7 +39,7 @@ import okhttp3.Response;
 public class ViewPagersFragments extends Fragment {
 
     private String weatherIdCity;
-    public  void setweaId(String id){
+    public  void setWeatherID(String id){
         weatherIdCity = id;
     }
 

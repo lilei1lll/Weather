@@ -80,11 +80,11 @@ public class MainActivity extends FragmentActivity {
     //初始化ViewPager，动态加载Fragment
     private void initViewPager() {
         viewPager = (ViewPager) findViewById(R.id.view_pager);
-        viewPager.setOffscreenPageLimit(4);  //设置ViewPager的预加载数量为5，防止快速滑动造成的bug
+        viewPager.setOffscreenPageLimit(4);  //设置ViewPager的预加载数量为4，防止快速滑动造成的bug
         List<Fragment> fragList = new ArrayList<Fragment>();
         for (String arrayList : C.cityNameArry) {
             ViewPagersFragments frag = new ViewPagersFragments();
-            frag.setweaId(arrayList);
+            frag.setWeatherID(arrayList);
             fragList.add(frag);
         }
         FragAdapter adapter = new FragAdapter(getSupportFragmentManager(),
