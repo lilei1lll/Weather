@@ -93,8 +93,8 @@ public class ChooseAreaFragment extends Fragment {
                 }else if (currentLevel == LEVEL_COUNTY){
                     //侧滑最后一级：点击城市，关闭策划，存储数据
                     String cityId = countyList.get(position).getCountyName();
-                    C.add(C.cityNameArry, cityId);
-                    saveArray(C.cityNameArry);
+                    C.add(C.cityNameArray, cityId);
+                    saveArray(C.cityNameArray);
                     ChooseActivity.actionStart(getContext());
                     getActivity().finish();
                     }

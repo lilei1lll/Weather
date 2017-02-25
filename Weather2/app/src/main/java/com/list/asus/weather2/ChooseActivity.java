@@ -77,7 +77,7 @@ public class ChooseActivity extends AppCompatActivity {
         /*
         *从C中初始化ChoosedList
         */
-        ChoosedList = C.cityNameArry;
+        ChoosedList = C.cityNameArray;
 
 
 
@@ -98,9 +98,9 @@ public class ChooseActivity extends AppCompatActivity {
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                C.cityNameArry.remove(position);
+                                C.cityNameArray.remove(position);
                                 adapter.notifyDataSetChanged();
-                                saveArray(C.cityNameArry);
+                                saveArray(C.cityNameArray);
                             }
                         });
                 builder.setPositiveButton("取消", null);
@@ -194,8 +194,8 @@ public class ChooseActivity extends AppCompatActivity {
         @Override
         public void onReceiveLocation(BDLocation bdLocation) {
             String weatherLocation = bdLocation.getCity();
-            C.add(C.cityNameArry,weatherLocation);
-            saveArray(C.cityNameArry);
+            C.add(C.cityNameArray,weatherLocation);
+            saveArray(C.cityNameArray);
         }
 
         @Override

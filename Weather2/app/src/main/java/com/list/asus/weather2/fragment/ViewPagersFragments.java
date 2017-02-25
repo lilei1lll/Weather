@@ -68,7 +68,7 @@ public class ViewPagersFragments extends Fragment {
         SharedPreferences prefsWeather = PreferenceManager
                 .getDefaultSharedPreferences(getActivity());
         String weatherString  = prefsWeather.getString("weather"+weatherIdCity,null);
-        if (C.Judge(C.cityNameArry,weatherIdCity) && weatherString != null) {
+        if (C.Judge(C.cityNameArray,weatherIdCity) && weatherString != null) {
             Weather weather = Utility.
                     handleWeatherResponse(weatherString);
             showWeatherInfo(weather);

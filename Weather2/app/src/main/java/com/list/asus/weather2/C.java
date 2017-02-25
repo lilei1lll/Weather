@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 public class C {
 
-    public static ArrayList<String> cityNameArry = new ArrayList<>();
+    public static ArrayList<String> cityNameArray = new ArrayList<>();
 
     public static void add(ArrayList<String> arrayList, String string){
         int i=0;
