@@ -1,6 +1,7 @@
 package com.list.asus.weather2;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -13,7 +14,9 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.ViewDragHelper;
 import android.support.v7.app.AppCompatActivity;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -30,6 +33,7 @@ import com.baidu.location.LocationClientOption;
 
 import org.json.JSONArray;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,6 +48,7 @@ public class ChooseActivity extends AppCompatActivity {
         setContentView(R.layout.activity_choose);
 
         final DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        setDrawerLeftEdgeSize(this, drawerLayout, 1.0f);
         TextView addSlipText = (TextView) findViewById(R.id.add_slip_textview);
         TextView backText = (TextView) findViewById(R.id.back_text);
         //侧滑提示
@@ -221,4 +226,25 @@ public class ChooseActivity extends AppCompatActivity {
         editor.putString("choosedCityArray",jsonArray.toString());
         editor.apply();
     }
+
+    //通过反射设置滑动距离
+    public static void setDrawerLeftEdgeSize(Activity activity, DrawerLayout drawerLayout,
+                                             float displayWidthPercentage) {
+        if (activity == null || drawerLayout == null) return;
+        try {
+            //当传入键值为mRightDragger时，实现右拉全局滑动，获得右边的距离，为mLeftDragger时，为左边
+            Field leftDraggerField = drawerLayout.getClass().getDeclaredField("mRightDragger");
+            leftDraggerField.setAccessible(true);
+            ViewDragHelper leftDragger = (ViewDragHelper) leftDraggerField.get(drawerLayout);
+            Field edgeSizeField = leftDragger.getClass().getDeclaredField("mEdgeSize");
+            edgeSizeField.setAccessible(true);
+            int edgeSize = edgeSizeField.getInt(leftDragger);
+            DisplayMetrics dm = new DisplayMetrics();
+            activity.getWindowManager().getDefaultDisplay().getMetrics(dm);
+            edgeSizeField.setInt(leftDragger, Math.max(edgeSize, (int)
+                    (dm.widthPixels * displayWidthPercentage)));
+        } catch (Exception e) {
+        }
+    }
+
 }

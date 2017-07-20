@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName;
 
 public class Suggestion {
 
-    @SerializedName("air")
+    //@SerializedName("air")
     public Air air;
 
     @SerializedName("comf")
