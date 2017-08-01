@@ -1,10 +1,8 @@
 package com.list.asus.weather2.util;
 
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import com.list.asus.weather2.db.City;
 import com.list.asus.weather2.db.County;
 import com.list.asus.weather2.db.Province;

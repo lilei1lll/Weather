@@ -39,7 +39,7 @@ import okhttp3.Response;
 public class ViewPagersFragments extends Fragment {
 
     private String weatherIdCity;
-    public  void setweaId(String id){
+    public  void setWeatherID(String id){
         weatherIdCity = id;
     }
 
@@ -68,7 +68,7 @@ public class ViewPagersFragments extends Fragment {
         SharedPreferences prefsWeather = PreferenceManager
                 .getDefaultSharedPreferences(getActivity());
         String weatherString  = prefsWeather.getString("weather"+weatherIdCity,null);
-        if (C.Judge(C.cityNameArry,weatherIdCity) && weatherString != null) {
+        if (C.Judge(C.cityNameArray,weatherIdCity) && weatherString != null) {
             Weather weather = Utility.
                     handleWeatherResponse(weatherString);
             showWeatherInfo(weather);
@@ -115,7 +115,7 @@ public class ViewPagersFragments extends Fragment {
         sportText = (TextView) view.findViewById(R.id.sport_text);
         dressSuggestionText = (TextView) view.findViewById(R.id.dress_suggestion_text);
         fluText = (TextView) view.findViewById(R.id.flu_text);
-        airText = (TextView) view.findViewById(R.id.air_text);
+        //airText = (TextView) view.findViewById(R.id.air_text);
         travelText = (TextView) view.findViewById(R.id.travel_text);
         ultravioletText = (TextView) view.findViewById(R.id.ultraviolet_text);
         //下拉刷新
@@ -127,7 +127,7 @@ public class ViewPagersFragments extends Fragment {
     //根据城市id请求天气信息
     public void requestWeather(final String weatherId) {
         String weatherURl = "https://free-api.heweather.com/v5/weather?city="
-                + weatherId + "&key=2881ccb3103344c389011b756a3b2120";
+                + weatherId + "&key=ba017b1a8a1f4f0fb5912bb2295d21a9";
         HttpUtil.sendOkHttpRequest(weatherURl, new Callback() {
 
             @Override
@@ -205,6 +205,8 @@ public class ViewPagersFragments extends Fragment {
                     + "~" + dailyForecast.temperature.max + "℃");
             forecastDailyLayout.addView(view);
         }
+        /**
+        * 由于接口的原因，每小时的天气情况没有返回结果*/
         //加载Hourly布局
         RecyclerView recyclerView = (RecyclerView)
                 view.findViewById(R.id.forecast_hourly_recycler_view_layout);
@@ -223,19 +225,21 @@ public class ViewPagersFragments extends Fragment {
             qltyText.setText(weather.aqi.city.qlty);
             so2Text.setText(weather.aqi.city.so2);
         }
-        String comfort = "舒适度：" + weather.suggestion.comfort.info1
+        String comfort = "舒适度指数：" + weather.suggestion.comfort.info1
                 + "\n\n" + weather.suggestion.comfort.info;
-        String carWash = "洗车指数：" + weather.suggestion.comfort.info1
+        String carWash = "洗车指数：" + weather.suggestion.carWash.info1
                 + "\n\n" + weather.suggestion.carWash.info;
         String sport = "运动指数：" + weather.suggestion.sport.info1
                 + "\n\n" + weather.suggestion.sport.info;
         String dressSuggestion = "穿衣指数：" + weather.suggestion.dressSuggestion.info1
                 + "\n\n" + weather.suggestion.dressSuggestion.info;
-        String flu = "易发：" + weather.suggestion.flu.info1
+        String flu = "感冒指数：" + weather.suggestion.flu.info1
                 + "\n\n" + weather.suggestion.flu.info;
-        String air = "空气条件：" + weather.suggestion.air.info1
-                + "\n\n" + weather.suggestion.air.info;
-        String ultraviolet = "紫外线：" + weather.suggestion.ultraviolet.info1
+        /**
+         * 由于天气Api接口原因，目前免费中没有这一接口，所以注销
+         * String air = "空气条件：" + weather.suggestion.air.info1
+                + "\n\n" + weather.suggestion.air.info;*/
+        String ultraviolet = "紫外线指数：" + weather.suggestion.ultraviolet.info1
                 + "\n\n" + weather.suggestion.ultraviolet.info;
         String travel = "旅行指数：" + weather.suggestion.travel.info1
                 + "\n\n" + weather.suggestion.travel.info;
@@ -244,7 +248,7 @@ public class ViewPagersFragments extends Fragment {
         sportText.setText(sport);
         dressSuggestionText.setText(dressSuggestion);
         fluText.setText(flu);
-        airText.setText(air);
+        //airText.setText(air);  //由于Api原因
         ultravioletText.setText(ultraviolet);
         travelText.setText(travel);
         weatherLayout.setVisibility(View.VISIBLE);

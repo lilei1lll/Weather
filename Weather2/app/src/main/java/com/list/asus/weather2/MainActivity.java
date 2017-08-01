@@ -41,8 +41,8 @@ public class MainActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         getArray();
         //防止第一次没有数据，设置一个默认数据
-        if (C.cityNameArry == null) {
-            C.add(C.cityNameArry,"北京");
+        if (C.cityNameArray.isEmpty()) {
+            C.add(C.cityNameArray,"北京");
         }
         //对API进行判断
         if (Build.VERSION.SDK_INT >= 21) {
@@ -80,11 +80,11 @@ public class MainActivity extends FragmentActivity {
     //初始化ViewPager，动态加载Fragment
     private void initViewPager() {
         viewPager = (ViewPager) findViewById(R.id.view_pager);
-        viewPager.setOffscreenPageLimit(4);  //设置ViewPager的预加载数量为5，防止快速滑动造成的bug
+        viewPager.setOffscreenPageLimit(4);  //设置ViewPager的预加载数量为4，防止快速滑动造成的bug
         List<Fragment> fragList = new ArrayList<Fragment>();
-        for (String arrayList : C.cityNameArry) {
+        for (String arrayList : C.cityNameArray) {
             ViewPagersFragments frag = new ViewPagersFragments();
-            frag.setweaId(arrayList);
+            frag.setWeatherID(arrayList);
             fragList.add(frag);
         }
         FragAdapter adapter = new FragAdapter(getSupportFragmentManager(),
@@ -134,7 +134,7 @@ public class MainActivity extends FragmentActivity {
             JSONArray jsonArray = new JSONArray(prefs.getString("choosedCityArray", null));
             if (jsonArray != null){
                 for (int i = 0; i < jsonArray.length(); i++) {
-                    C.add(C.cityNameArry,jsonArray.getString(i));
+                    C.add(C.cityNameArray,jsonArray.getString(i));
                 }
             }
         } catch (Exception e) {
