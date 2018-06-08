@@ -16,13 +16,15 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.ViewDragHelper;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
@@ -37,10 +39,12 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class ChooseActivity extends AppCompatActivity {
 
-    private ArrayList<String> ChoosedList = new ArrayList<>();
+    private ArrayList<String> mChoosedList = new ArrayList<>();
     private LocationClient mLocationClient;
+    private ArrayAdapter<String> adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,9 +52,12 @@ public class ChooseActivity extends AppCompatActivity {
         setContentView(R.layout.activity_choose);
 
         final DrawerLayout drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        setDrawerLeftEdgeSize(this, drawerLayout, 1.0f);
-        TextView addSlipText = (TextView) findViewById(R.id.add_slip_textview);
-        TextView backText = (TextView) findViewById(R.id.back_text);
+//        setDrawerLeftEdgeSize(this, drawerLayout, 1.0f);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        ImageView addSlipText = (ImageView) findViewById(R.id.add_slip_textview);
+        ImageView backText = (ImageView) findViewById(R.id.back_text);
+        setSupportActionBar(toolbar);
+        mLocationClient = new LocationClient(this.getApplicationContext());
         //侧滑提示
         addSlipText.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -68,12 +75,14 @@ public class ChooseActivity extends AppCompatActivity {
             }
         });
         ToggleButton lbsButton = (ToggleButton) findViewById(R.id.lbs_button);
+
         lbsButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     initLbs();
                 }else {
+
                 }
 
             }
@@ -82,12 +91,12 @@ public class ChooseActivity extends AppCompatActivity {
         /*
         *从C中初始化ChoosedList
         */
-        ChoosedList = C.cityNameArray;
+        mChoosedList = C.cityNameArray;
 
 
 
-        final ArrayAdapter<String> adapter = new ArrayAdapter<String>(
-                ChooseActivity.this, android.R.layout.simple_list_item_1, ChoosedList);
+        adapter = new ArrayAdapter<>(
+                ChooseActivity.this, android.R.layout.simple_list_item_1, mChoosedList);
         ListView listView =(ListView) findViewById(R.id.choose_activity_list_view);
         listView.setAdapter(adapter);
 
@@ -134,7 +143,6 @@ public class ChooseActivity extends AppCompatActivity {
      **/
     //获取位置，定位
     private void initLbs() {
-        mLocationClient = new LocationClient(this.getApplicationContext());
         mLocationClient.registerLocationListener(new MyLocationListener());  //注册定位监听器
         List<String> permissionList = new ArrayList<>();  //将没有授权的添加到List集合中
         if (ContextCompat.checkSelfPermission(this,
@@ -157,6 +165,7 @@ public class ChooseActivity extends AppCompatActivity {
             requestLocation();
         }
     }
+
     //开始定位
     private void requestLocation() {
         initLocation();
@@ -199,8 +208,13 @@ public class ChooseActivity extends AppCompatActivity {
         @Override
         public void onReceiveLocation(BDLocation bdLocation) {
             String weatherLocation = bdLocation.getCity();
-            C.add(C.cityNameArray,weatherLocation);
-            saveArray(C.cityNameArray);
+            Log.e("choose", weatherLocation);
+            if (weatherLocation != null) {
+                C.add(C.cityNameArray, weatherLocation);
+                saveArray(C.cityNameArray);
+                adapter.add(weatherLocation);
+                adapter.notifyDataSetChanged();
+            }
         }
 
         @Override
@@ -208,11 +222,13 @@ public class ChooseActivity extends AppCompatActivity {
             return;
         }
     }
+
     @Override
     protected void onDestroy() {
+        mLocationClient.stop();  //停止定位
         super.onDestroy();
-//        mLocationClient.stop();  //停止定位
     }
+
     /**
     * ---------------------------------------------------------------------------------------------
     **/
@@ -230,7 +246,9 @@ public class ChooseActivity extends AppCompatActivity {
     //通过反射设置滑动距离
     public static void setDrawerLeftEdgeSize(Activity activity, DrawerLayout drawerLayout,
                                              float displayWidthPercentage) {
-        if (activity == null || drawerLayout == null) return;
+        if (activity == null || drawerLayout == null) {
+            return;
+        }
         try {
             //当传入键值为mRightDragger时，实现右拉全局滑动，获得右边的距离，为mLeftDragger时，为左边
             Field leftDraggerField = drawerLayout.getClass().getDeclaredField("mRightDragger");

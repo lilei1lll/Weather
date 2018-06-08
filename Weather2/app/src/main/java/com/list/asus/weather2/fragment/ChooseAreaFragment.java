@@ -18,9 +18,9 @@ import android.widget.Toast;
 import com.list.asus.weather2.C;
 import com.list.asus.weather2.ChooseActivity;
 import com.list.asus.weather2.R;
-import com.list.asus.weather2.db.City;
-import com.list.asus.weather2.db.County;
-import com.list.asus.weather2.db.Province;
+import com.list.asus.weather2.bean.db.City;
+import com.list.asus.weather2.bean.db.County;
+import com.list.asus.weather2.bean.db.Province;
 import com.list.asus.weather2.util.HttpUtil;
 import com.list.asus.weather2.util.Utility;
 
@@ -235,6 +235,7 @@ public class ChooseAreaFragment extends Fragment {
             progressDialog.dismiss();
         }
     }
+
     //保存数据
     public  void saveArray(ArrayList<String> StringArray) {
         JSONArray jsonArray = new JSONArray();

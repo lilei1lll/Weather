@@ -1,9 +1,9 @@
 <litepal>
-    <dbname value="weather2"></dbname>
-    <version value="1"></version>
+    <dbname value="weather2" />
+    <version value="1" />
     <list>
-        <mapping class="com.list.asus.weather2.db.Province"></mapping>
-        <mapping class="com.list.asus.weather2.db.City"></mapping>
-        <mapping class="com.list.asus.weather2.db.County"></mapping>
+        <mapping class="com.list.asus.weather2.bean.db.Province" />
+        <mapping class="com.list.asus.weather2.bean.db.City" />
+        <mapping class="com.list.asus.weather2.bean.db.County" />
     </list>
 </litepal>

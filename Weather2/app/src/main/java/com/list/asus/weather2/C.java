@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 
 public class C {
-
     public static ArrayList<String> cityNameArray = new ArrayList<>();
 
     public static void add(ArrayList<String> arrayList, String string){
@@ -21,7 +20,7 @@ public class C {
     //用于判断是否存在
     public static boolean Judge(ArrayList<String> arrayList, String string) {
         for (String a: arrayList){
-            if ( a.equals(string)){
+            if (a != null && a.equals(string)){
                 return true;
             }
         }

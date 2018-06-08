@@ -4,6 +4,11 @@
               android:layout_width="100dp"
               android:layout_height="wrap_content">
 
+    <ImageView
+        android:id="@+id/hourly_info_iv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal" />
 
     <TextView
         android:id="@+id/hourly_time_text"

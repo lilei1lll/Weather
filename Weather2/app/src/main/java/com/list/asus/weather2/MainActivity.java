@@ -41,7 +41,7 @@ public class MainActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         getArray();
         //防止第一次没有数据，设置一个默认数据
-        if (C.cityNameArray.isEmpty()) {
+        if (C.cityNameArray.size() == 0) {
             C.add(C.cityNameArray,"北京");
         }
         //对API进行判断
@@ -80,7 +80,8 @@ public class MainActivity extends FragmentActivity {
     //初始化ViewPager，动态加载Fragment
     private void initViewPager() {
         viewPager = (ViewPager) findViewById(R.id.view_pager);
-        viewPager.setOffscreenPageLimit(4);  //设置ViewPager的预加载数量为4，防止快速滑动造成的bug
+        //设置ViewPager的预加载数量为4，防止快速滑动造成的bug
+        viewPager.setOffscreenPageLimit(4);
         List<Fragment> fragList = new ArrayList<Fragment>();
         for (String arrayList : C.cityNameArray) {
             ViewPagersFragments frag = new ViewPagersFragments();
@@ -124,6 +125,12 @@ public class MainActivity extends FragmentActivity {
     public void onBackPressed() {
         super.onBackPressed();
         finish();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getArray();
     }
 
     //------------------------------读取选择过的城市---------------------------------------

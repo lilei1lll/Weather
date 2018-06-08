@@ -1,5 +1,6 @@
 package com.list.asus.weather2.fragment;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,8 +22,12 @@ import android.widget.Toast;
 import com.list.asus.weather2.Adapter.HourlyForecastAdapter;
 import com.list.asus.weather2.C;
 import com.list.asus.weather2.R;
-import com.list.asus.weather2.gson.DailyForecast;
-import com.list.asus.weather2.gson.Weather;
+import com.list.asus.weather2.bean.AQIWeather;
+import com.list.asus.weather2.bean.DailyForecast;
+import com.list.asus.weather2.bean.DailyForecastWeather;
+import com.list.asus.weather2.bean.HourlyForecastWeather;
+import com.list.asus.weather2.bean.NowWeather;
+import com.list.asus.weather2.bean.SuggestionWeather;
 import com.list.asus.weather2.service.AutoUpdateService;
 import com.list.asus.weather2.util.HttpUtil;
 import com.list.asus.weather2.util.Utility;
@@ -37,7 +43,6 @@ import okhttp3.Response;
  */
 
 public class ViewPagersFragments extends Fragment {
-
     private String weatherIdCity;
     public  void setWeatherID(String id){
         weatherIdCity = id;
@@ -65,16 +70,7 @@ public class ViewPagersFragments extends Fragment {
 
         initView();
         weatherLayout.setVisibility(View.INVISIBLE);
-        SharedPreferences prefsWeather = PreferenceManager
-                .getDefaultSharedPreferences(getActivity());
-        String weatherString  = prefsWeather.getString("weather"+weatherIdCity,null);
-        if (C.Judge(C.cityNameArray,weatherIdCity) && weatherString != null) {
-            Weather weather = Utility.
-                    handleWeatherResponse(weatherString);
-            showWeatherInfo(weather);
-        } else {
-            requestWeather(weatherIdCity);
-        }
+        getWeather();
 
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -85,7 +81,42 @@ public class ViewPagersFragments extends Fragment {
         return view;
     }
 
-    //初始化控件
+    private void getWeather() {
+        SharedPreferences prefsWeather = PreferenceManager
+                .getDefaultSharedPreferences(getActivity());
+        String nowString  = prefsWeather.getString("now_weather"+weatherIdCity,null);
+        String dailyString = prefsWeather.getString("daily_weather"+weatherIdCity, null);
+        String hourlyString = prefsWeather.getString("hourly_weather"+weatherIdCity, null);
+        String aqiString = prefsWeather.getString("aqi_weather"+weatherIdCity, null);
+        String suggestionString = prefsWeather.getString("suggestion_weather"+weatherIdCity, null);
+        if (C.Judge(C.cityNameArray, weatherIdCity) && nowString != null || dailyString != null
+                || hourlyString != null || aqiString != null || suggestionString != null) {
+            NowWeather nowWeather = Utility.handleNowResponse(nowString);
+            DailyForecastWeather dailyForecastWeather = Utility.handleDailyResponse(dailyString);
+            HourlyForecastWeather hourlyForecastWeather = Utility.handleHourlyResponse(hourlyString);
+            AQIWeather aqiWeather = Utility.handleAQIResponse(aqiString);
+            SuggestionWeather suggestionWeather = Utility.handleSuggestionResponse(suggestionString);
+
+            if (nowWeather != null) {
+                showNowWeather(nowWeather);
+            }
+            if (dailyForecastWeather != null) {
+                showDailyWeather(dailyForecastWeather);
+            }
+            if (hourlyForecastWeather != null) {
+                showHourlyWeather(hourlyForecastWeather);
+            }
+            if (aqiWeather != null) {
+                showAQIWeather(aqiWeather);
+            }
+            if (suggestionWeather != null) {
+                showSuggestionWeather(suggestionWeather);
+            }
+        } else {
+            requestWeather(weatherIdCity);
+        }
+    }
+
     private void initView() {
         weatherLayout = (ScrollView) view.findViewById(R.id.weather_layout);
         cityNameText = (TextView) view.findViewById(R.id.city_name_text);
@@ -115,7 +146,7 @@ public class ViewPagersFragments extends Fragment {
         sportText = (TextView) view.findViewById(R.id.sport_text);
         dressSuggestionText = (TextView) view.findViewById(R.id.dress_suggestion_text);
         fluText = (TextView) view.findViewById(R.id.flu_text);
-        //airText = (TextView) view.findViewById(R.id.air_text);
+        airText = (TextView) view.findViewById(R.id.air_text);
         travelText = (TextView) view.findViewById(R.id.travel_text);
         ultravioletText = (TextView) view.findViewById(R.id.ultraviolet_text);
         //下拉刷新
@@ -126,10 +157,179 @@ public class ViewPagersFragments extends Fragment {
 
     //根据城市id请求天气信息
     public void requestWeather(final String weatherId) {
-        String weatherURl = "https://free-api.heweather.com/v5/weather?city="
-                + weatherId + "&key=ba017b1a8a1f4f0fb5912bb2295d21a9";
-        HttpUtil.sendOkHttpRequest(weatherURl, new Callback() {
+        getNowWeather(weatherId);
+        getDailyWeather(weatherId);
+        getHourlyWeather(weatherId);
+        getSuggestionWeather(weatherId);
+        getAQIWeather(weatherId);
+        //开启后台服务，进行更新
+        Intent intent = new Intent(getActivity(), AutoUpdateService.class);
+        getActivity().startService(intent);
+    }
 
+    private void getAQIWeather(final String weatherId) {
+        String nowUrl = HttpUtil.BASE_URL + "air/now?location=" + weatherId + HttpUtil.KEY;
+        HttpUtil.sendOkHttpRequest(nowUrl, new Callback() {
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+//                        Toast.makeText(getActivity(), "无法连接数据，获取天气信息失败",
+//                                Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, final Response response) throws IOException {
+                final String responseText = response.body().string();
+                final AQIWeather weather = Utility.handleAQIResponse(responseText);
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (weather != null && HttpUtil.STATUS.equals(weather.getStatus())){
+                            SharedPreferences.Editor editor = PreferenceManager
+                                    .getDefaultSharedPreferences(getActivity())
+                                    .edit();
+                            editor.putString("aqi_weather" + weatherId,responseText);
+                            editor.apply();
+                            showAQIWeather(weather);
+                        }else {
+//                            Toast.makeText(getActivity(), "获取天气信息失败",
+//                                    Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    private void getSuggestionWeather(final String weatherId) {
+        String nowUrl = HttpUtil.BASE_URL + "weather/lifestyle?location=" + weatherId + HttpUtil.KEY;
+        HttpUtil.sendOkHttpRequest(nowUrl, new Callback() {
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+//                        Toast.makeText(getActivity(), "无法连接数据，获取天气信息失败",
+//                                Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, final Response response) throws IOException {
+                final String responseText = response.body().string();
+                final SuggestionWeather weather = Utility.handleSuggestionResponse(responseText);
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (weather != null && HttpUtil.STATUS.equals(weather.getStatus())){
+                            SharedPreferences.Editor editor = PreferenceManager
+                                    .getDefaultSharedPreferences(getActivity())
+                                    .edit();
+                            editor.putString("suggestion_weather" + weatherId,responseText);
+                            editor.apply();
+                            showSuggestionWeather(weather);
+                        }else {
+//                            Toast.makeText(getActivity(), "获取天气信息失败",
+//                                    Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    private void getHourlyWeather(final String weatherId) {
+        String nowUrl = HttpUtil.BASE_URL + "weather/hourly?location=" + weatherId + HttpUtil.KEY;
+        HttpUtil.sendOkHttpRequest(nowUrl, new Callback() {
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+//                getActivity().runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        Toast.makeText(getActivity(), "无法连接数据，获取天气信息失败",
+//                                Toast.LENGTH_SHORT).show();
+//                    }
+//                });
+            }
+
+            @Override
+            public void onResponse(Call call, final Response response) throws IOException {
+                final String responseText = response.body().string();
+                final HourlyForecastWeather weather = Utility.handleHourlyResponse(responseText);
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (weather != null && HttpUtil.STATUS.equals(weather.getStatus())){
+                            SharedPreferences.Editor editor = PreferenceManager
+                                    .getDefaultSharedPreferences(getActivity())
+                                    .edit();
+                            editor.putString("hourly_weather" + weatherId,responseText);
+                            editor.apply();
+                            showHourlyWeather(weather);
+                        }else {
+//                            Toast.makeText(getActivity(), "获取天气信息失败",
+//                                    Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    private void getDailyWeather(final String weatherId) {
+        String nowUrl = HttpUtil.BASE_URL + "weather/forecast?location=" + weatherId + HttpUtil.KEY;
+        HttpUtil.sendOkHttpRequest(nowUrl, new Callback() {
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+//                getActivity().runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        Toast.makeText(getActivity(), "无法连接数据，获取天气信息失败",
+//                                Toast.LENGTH_SHORT).show();
+//                    }
+//                });
+            }
+
+            @Override
+            public void onResponse(Call call, final Response response) throws IOException {
+                final String responseText = response.body().string();
+                final DailyForecastWeather weather = Utility.handleDailyResponse(responseText);
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (weather != null && HttpUtil.STATUS.equals(weather.getStatus())){
+                            SharedPreferences.Editor editor = PreferenceManager
+                                    .getDefaultSharedPreferences(getActivity())
+                                    .edit();
+                            editor.putString("daily_weather" + weatherId,responseText);
+                            editor.apply();
+                            showDailyWeather(weather);
+                        }else {
+//                            Toast.makeText(getActivity(), "获取天气信息失败",
+//                                    Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    private void getNowWeather(final String weatherId) {
+        String nowUrl = HttpUtil.BASE_URL + "weather/now?location=" + weatherId + HttpUtil.KEY;
+        HttpUtil.sendOkHttpRequest(nowUrl, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 e.printStackTrace();
@@ -146,22 +346,23 @@ public class ViewPagersFragments extends Fragment {
             @Override
             public void onResponse(Call call, final Response response) throws IOException {
                 final String responseText = response.body().string();
-                final Weather weather = Utility.handleWeatherResponse(responseText);
+                final NowWeather weather = Utility.handleNowResponse(responseText);
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if (weather != null && "ok".equals(weather.status)){
+                        if (weather != null && HttpUtil.STATUS.equals(weather.getStatus())){
                             SharedPreferences.Editor editor = PreferenceManager
                                     .getDefaultSharedPreferences(getActivity())
                                     .edit();
-                            editor.putString("weather" + weatherId,responseText);
+                            editor.putString("now_weather" + weatherId,responseText);
                             editor.apply();
-                            showWeatherInfo(weather);
+                            showNowWeather(weather);
+                            swipeRefreshLayout.setRefreshing(false);
                         }else {
                             Toast.makeText(getActivity(), "获取天气信息失败",
                                     Toast.LENGTH_SHORT).show();
+                            swipeRefreshLayout.setRefreshing(false);
                         }
-                        swipeRefreshLayout.setRefreshing(false);
                     }
                 });
             }
@@ -169,17 +370,18 @@ public class ViewPagersFragments extends Fragment {
     }
 
     //处理并展示Weather实体类中的数据
-    private void showWeatherInfo(Weather weather) {
-        String cityName = weather.basic.cityName;
-        String updateLocTime = "loc：" + weather.basic.update.updateLocTime;
-        String updateUtcTime = "utc：" + weather.basic.update.updateUtcTime;
-        String degree = weather.now.temperature + "℃";
-        String sensibleTemp = "体感温度：" + weather.now.sensibleTemp + "℃";
-        String relativeHumidity = "相对湿度：" + weather.now.relativeHumidity + "%";
-        String precipitation = "降水量：" + weather.now.precipitation + "mm";
-        String windDirection1 = "风向：" + weather.now.wind.windDirection1 + "°";
-        String windDirection2 = "风向：" + weather.now.wind.windDirection2;
-        String weatherInfo = weather.now.more.info;
+
+    private void showNowWeather(NowWeather weather) {
+        String cityName = weather.getBasic().getLocation();
+        String updateLocTime = "loc：" + weather.getUpdate().getLoc();
+        String updateUtcTime = "utc：" + weather.getUpdate().getUtc();
+        String degree = weather.getNow().getTmp() + "℃";
+        String sensibleTemp = "体感温度：" + weather.getNow().getFl() + "℃";
+        String relativeHumidity = "相对湿度：" + weather.getNow().getHum() + "%";
+        String precipitation = "降水量：" + weather.getNow().getPcpn() + "mm";
+        String windDirection1 = "风向：" + weather.getNow().getWindDeg() + "°";
+        String windDirection2 = "风向：" + weather.getNow().getWindDir();
+        String weatherInfo = weather.getNow().getCondTxt();
         cityNameText.setText(cityName);
         titleUpdateLocTime.setText(updateLocTime);
         titleUpdateUtcTime.setText(updateUtcTime);
@@ -190,71 +392,76 @@ public class ViewPagersFragments extends Fragment {
         windDirection1Text.setText(windDirection1);
         windDirection2Text.setText(windDirection2);
         weatherInfoText.setText(weatherInfo);
+    }
+
+    @SuppressLint("SetTextI18n")
+    private void showDailyWeather(DailyForecastWeather weather) {
         //加载daily布局
         forecastDailyLayout.removeAllViews();
-        for (DailyForecast dailyForecast : weather.dailyForecastList){
+        for (DailyForecast dailyForecast : weather.getDailyForecast()){
             View view = LayoutInflater.from(getContext()).inflate(R.layout.forecast_daily_item,
                     forecastDailyLayout, false);
             TextView dateText = (TextView) view.findViewById(R.id.days_text);
             TextView infoText = (TextView) view.findViewById(R.id.info_text);
             TextView maxText = (TextView) view.findViewById(R.id.min_max_text);
-            dateText.setText(String.valueOf(dailyForecast.date));
-            dateText.setText(dailyForecast.date);
-            infoText.setText(dailyForecast.more.info);
-            maxText.setText(dailyForecast.temperature.min + "℃"
-                    + "~" + dailyForecast.temperature.max + "℃");
+            dateText.setText(dailyForecast.getDate());
+            infoText.setText(dailyForecast.getCondTxtD() + " " + dailyForecast.getCondTxtN());
+            maxText.setText(dailyForecast.getTmpMin() + "℃" + "~" + dailyForecast.getTmpMax() + "℃");
             forecastDailyLayout.addView(view);
         }
-        /**
-        * 由于接口的原因，每小时的天气情况没有返回结果*/
+    }
+
+    private void showHourlyWeather(HourlyForecastWeather weather) {
         //加载Hourly布局
         RecyclerView recyclerView = (RecyclerView)
                 view.findViewById(R.id.forecast_hourly_recycler_view_layout);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
-        layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);  //实现横向布局
+        layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
         recyclerView.setLayoutManager(layoutManager);
         HourlyForecastAdapter hourlyForecastAdapter =
-                new HourlyForecastAdapter(weather.hourlyForecastList);
+                new HourlyForecastAdapter(weather.getHourly());
         recyclerView.setAdapter(hourlyForecastAdapter);
-        if (weather.aqi != null){
-            aqiText.setText(weather.aqi.city.aqi);
-            no2Text.setText(weather.aqi.city.no2);
-            o3Text.setText(weather.aqi.city.o3);
-            pm10Text.setText(weather.aqi.city.pm10);
-            pm25Text.setText(weather.aqi.city.pm25);
-            qltyText.setText(weather.aqi.city.qlty);
-            so2Text.setText(weather.aqi.city.so2);
-        }
-        String comfort = "舒适度指数：" + weather.suggestion.comfort.info1
-                + "\n\n" + weather.suggestion.comfort.info;
-        String carWash = "洗车指数：" + weather.suggestion.carWash.info1
-                + "\n\n" + weather.suggestion.carWash.info;
-        String sport = "运动指数：" + weather.suggestion.sport.info1
-                + "\n\n" + weather.suggestion.sport.info;
-        String dressSuggestion = "穿衣指数：" + weather.suggestion.dressSuggestion.info1
-                + "\n\n" + weather.suggestion.dressSuggestion.info;
-        String flu = "感冒指数：" + weather.suggestion.flu.info1
-                + "\n\n" + weather.suggestion.flu.info;
-        /**
-         * 由于天气Api接口原因，目前免费中没有这一接口，所以注销
-         * String air = "空气条件：" + weather.suggestion.air.info1
-                + "\n\n" + weather.suggestion.air.info;*/
-        String ultraviolet = "紫外线指数：" + weather.suggestion.ultraviolet.info1
-                + "\n\n" + weather.suggestion.ultraviolet.info;
-        String travel = "旅行指数：" + weather.suggestion.travel.info1
-                + "\n\n" + weather.suggestion.travel.info;
+        Log.e("fragment", weather.getHourly().size()+"");
+    }
+
+    private void showSuggestionWeather(SuggestionWeather weather) {
+        String comfort = "舒适度指数：" + weather.getLifestyle().get(0).getBrf()
+                + "\n\n" + weather.getLifestyle().get(0).getTxt();
+        String carWash = "洗车指数：" + weather.getLifestyle().get(6).getBrf()
+                + "\n\n" + weather.getLifestyle().get(6).getTxt();
+        String sport = "运动指数：" + weather.getLifestyle().get(3).getBrf()
+                + "\n\n" + weather.getLifestyle().get(3).getTxt();
+        String dressSuggestion = "穿衣指数：" + weather.getLifestyle().get(1).getBrf()
+                + "\n\n" + weather.getLifestyle().get(1).getTxt();
+        String flu = "感冒指数：" + weather.getLifestyle().get(2).getBrf()
+                + "\n\n" + weather.getLifestyle().get(2).getTxt();
+        String air = "空气条件：" + weather.getLifestyle().get(7).getBrf()
+         + "\n\n" + weather.getLifestyle().get(7).getTxt();
+        String ultraviolet = "紫外线指数：" + weather.getLifestyle().get(5).getBrf()
+                + "\n\n" + weather.getLifestyle().get(5).getTxt();
+        String travel = "旅行指数：" + weather.getLifestyle().get(4).getBrf()
+                + "\n\n" + weather.getLifestyle().get(4).getTxt();
         comfortText.setText(comfort);
         carWashText.setText(carWash);
         sportText.setText(sport);
         dressSuggestionText.setText(dressSuggestion);
         fluText.setText(flu);
-        //airText.setText(air);  //由于Api原因
+        airText.setText(air);
         ultravioletText.setText(ultraviolet);
         travelText.setText(travel);
         weatherLayout.setVisibility(View.VISIBLE);
-        //开启后台服务，进行更新
-        Intent intent = new Intent(getActivity(), AutoUpdateService.class);
-        getActivity().startService(intent);
     }
 
+    private void showAQIWeather(AQIWeather weather) {
+        AQIWeather.AirNowCity aqi = weather.getAirNowCity();
+        if (aqi != null){
+            aqiText.setText(aqi.getAqi());
+            no2Text.setText(aqi.getNo2());
+            o3Text.setText(aqi.getO3());
+            pm10Text.setText(aqi.getPm10());
+            pm25Text.setText(aqi.getPm25());
+            qltyText.setText(aqi.getQlty());
+            so2Text.setText(aqi.getSo2());
+        }
+    }
 }

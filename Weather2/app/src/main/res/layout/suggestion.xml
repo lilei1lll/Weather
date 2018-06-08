@@ -30,7 +30,6 @@
         android:layout_height="1dp"
         android:background="@android:color/white"/>
 
-    <!--由于Api的原因，封闭该内容
     <TextView
         android:id="@+id/air_text"
         android:layout_width="wrap_content"
@@ -42,7 +41,7 @@
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="0.1dp"
-        android:background="@android:color/darker_gray"/>-->
+        android:background="@android:color/darker_gray"/>
 
     <TextView
         android:id="@+id/comfort_text"

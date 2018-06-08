@@ -3,28 +3,83 @@ package com.list.asus.weather2.util;
 import android.text.TextUtils;
 
 import com.google.gson.Gson;
-import com.list.asus.weather2.db.City;
-import com.list.asus.weather2.db.County;
-import com.list.asus.weather2.db.Province;
-import com.list.asus.weather2.gson.Weather;
+import com.list.asus.weather2.bean.AQIWeather;
+import com.list.asus.weather2.bean.DailyForecastWeather;
+import com.list.asus.weather2.bean.HourlyForecastWeather;
+import com.list.asus.weather2.bean.SuggestionWeather;
+import com.list.asus.weather2.bean.db.City;
+import com.list.asus.weather2.bean.db.County;
+import com.list.asus.weather2.bean.db.Province;
+import com.list.asus.weather2.bean.NowWeather;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class Utility {
     //将返回的JSON数据解析成Weather实体类
-    public static Weather handleWeatherResponse(String response){
+    public static NowWeather handleNowResponse(String response){
         try {
             JSONObject jsonObject = new JSONObject(response);
-            JSONArray jsonArray = jsonObject.getJSONArray("HeWeather5");
+            JSONArray jsonArray = jsonObject.getJSONArray("HeWeather6");
             String weatherContent = jsonArray.getJSONObject(0).toString();
-            return new Gson().fromJson(weatherContent, Weather.class);
+            return new Gson().fromJson(weatherContent, NowWeather.class);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static DailyForecastWeather handleDailyResponse(String response){
+        try {
+            JSONObject jsonObject = new JSONObject(response);
+            JSONArray jsonArray = jsonObject.getJSONArray("HeWeather6");
+            String weatherContent = jsonArray.getJSONObject(0).toString();
+            return new Gson().fromJson(weatherContent, DailyForecastWeather.class);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static HourlyForecastWeather handleHourlyResponse(String response){
+        try {
+            JSONObject jsonObject = new JSONObject(response);
+            JSONArray jsonArray = jsonObject.getJSONArray("HeWeather6");
+            String weatherContent = jsonArray.getJSONObject(0).toString();
+            return new Gson().fromJson(weatherContent, HourlyForecastWeather.class);
 
         }catch (Exception e){
             e.printStackTrace();
         }
         return null;
     }
+
+    public static AQIWeather handleAQIResponse(String response){
+        try {
+            JSONObject jsonObject = new JSONObject(response);
+            JSONArray jsonArray = jsonObject.getJSONArray("HeWeather6");
+            String weatherContent = jsonArray.getJSONObject(0).toString();
+            return new Gson().fromJson(weatherContent, AQIWeather.class);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static SuggestionWeather handleSuggestionResponse(String response){
+        try {
+            JSONObject jsonObject = new JSONObject(response);
+            JSONArray jsonArray = jsonObject.getJSONArray("HeWeather6");
+            String weatherContent = jsonArray.getJSONObject(0).toString();
+            return new Gson().fromJson(weatherContent, SuggestionWeather.class);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 
     //解析和处理服务器返回的省级数据
     public static boolean handleProvinceResponse(String response){
